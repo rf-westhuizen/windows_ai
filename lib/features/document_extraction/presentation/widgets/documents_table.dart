@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/providers/shared_providers.dart';
 import '../../data/models/models.dart';
 import '../../providers/extraction_providers.dart';
 import 'extraction_status_indicator.dart';
 
 /// Displays extracted documents in a table format.
-/// 
-/// Shows document name, status, extracted fields, and actions.
 class DocumentsTable extends ConsumerWidget {
   const DocumentsTable({
     required this.documents,
@@ -70,10 +69,7 @@ class DocumentsTable extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 16),
-          const SizedBox(
-            width: 48,
-            child: Text(''),
-          ),
+          const SizedBox(width: 100, child: Text('')), // Actions column
         ],
       ),
     );
@@ -154,20 +150,96 @@ class _DocumentRow extends ConsumerWidget {
           ),
           const SizedBox(width: 16),
           
-          // Remove button
+          // Action buttons
           SizedBox(
-            width: 48,
-            child: IconButton(
-              icon: const Icon(Icons.close),
-              tooltip: 'Remove document',
-              onPressed: () {
-                ref
-                    .read(extractedDocumentsProvider.notifier)
-                    .removeDocument(document.id);
-              },
+            width: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Add to Planner button (only show when completed)
+                if (document.status == ExtractionStatus.completed && 
+                    document.fields.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.calendar_month),
+                    tooltip: 'Add to Daily Planner',
+                    color: theme.colorScheme.primary,
+                    onPressed: () => _sendToPlanner(context, ref),
+                  ),
+                // Remove button
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  tooltip: 'Remove document',
+                  onPressed: () {
+                    ref
+                        .read(extractedDocumentsProvider.notifier)
+                        .removeDocument(document.id);
+                  },
+                ),
+              ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// Sends extracted data to the Daily Planner.
+  void _sendToPlanner(BuildContext context, WidgetRef ref) {
+    // Extract name and age from fields
+    String name = '';
+    int age = 0;
+    String? dateOfBirth;
+    String? address;
+    String? phone;
+    String? email;
+    String? idNumber;
+
+    for (final field in document.fields) {
+      final label = field.label.toLowerCase();
+      final value = field.value;
+
+      if (label.contains('name')) {
+        name = value;
+      } else if (label.contains('age')) {
+        age = int.tryParse(value.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+      } else if (label.contains('birth') || label.contains('dob')) {
+        dateOfBirth = value;
+      } else if (label.contains('address')) {
+        address = value;
+      } else if (label.contains('phone') || label.contains('contact') || label.contains('cell')) {
+        phone = value;
+      } else if (label.contains('email') || label.contains('mail')) {
+        email = value;
+      } else if (label.contains('id') && label.contains('number')) {
+        idNumber = value;
+      }
+    }
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No name found in extracted data')),
+      );
+      return;
+    }
+
+    // Set the extracted data
+    ref.read(extractedPatientDataProvider.notifier).state = ExtractedPatientData(
+      name: name,
+      age: age,
+      dateOfBirth: dateOfBirth,
+      address: address,
+      phone: phone,
+      email: email,
+      idNumber: idNumber,
+    );
+
+    // Trigger navigation to planner
+    ref.read(navigateToPlannerProvider.notifier).state = true;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$name added to Daily Planner'),
+        backgroundColor: Colors.green,
       ),
     );
   }

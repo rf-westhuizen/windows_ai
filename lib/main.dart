@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'features/document_extraction/presentation/screens/extraction_screen.dart';
+import 'main_navigation.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +26,7 @@ class DocumentExtractorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Document Data Extractor',
+      title: 'AI Document Tools',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -59,7 +59,7 @@ class DocumentExtractorApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.system,
-      home: const ExtractionScreen(),
+      home: const MainNavigationScreen(),
     );
   }
 }
