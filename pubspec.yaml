@@ -29,6 +29,7 @@ dependencies:
 
   # PDF Processing
   syncfusion_flutter_pdf: ^28.2.5
+  pdfx: ^2.8.0
 
   # Excel Export
   syncfusion_flutter_xlsio: ^28.2.5

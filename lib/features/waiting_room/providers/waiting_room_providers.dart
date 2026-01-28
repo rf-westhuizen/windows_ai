@@ -104,8 +104,18 @@ class WaitingRoomNotifier extends Notifier<WaitingRoomState> {
       final ext = fileName.toLowerCase().split('.').last;
 
       if (ext == 'pdf') {
-        final text = await pdfService.extractText(filePath);
-        result = await extractionService.extractFromText(text);
+        // Try text extraction first
+        try {
+          final text = await pdfService.extractText(filePath);
+          print('🔵 [WaitingRoom] Text extraction successful, using text mode');
+          result = await extractionService.extractFromText(text);
+        } on InsufficientTextException catch (e) {
+          // Fallback to Vision API for image-based PDFs
+          print('🟡 [WaitingRoom] ${e.message}');
+          print('🟡 [WaitingRoom] Falling back to Vision API...');
+          final images = await pdfService.convertToImages(filePath);
+          result = await extractionService.extractFromImageBytes(images);
+        }
       } else {
         result = await extractionService.extractFromImage(filePath);
       }

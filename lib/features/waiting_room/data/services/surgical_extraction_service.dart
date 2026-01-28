@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:langchain/langchain.dart';
 import 'package:langchain_openai/langchain_openai.dart';
@@ -127,6 +128,54 @@ Rules:
     print('🔵 [SurgicalExtraction] Calling OpenAI Vision API...');
     final response = await llm.invoke(PromptValue.chat(messages));
     print('🟢 [SurgicalExtraction] Response received!');
+
+    return _parseResponse(response.output.content);
+  }
+
+  /// Extracts surgical cases from multiple image bytes (e.g., PDF pages).
+  /// 
+  /// Combines all images into a single Vision API request for context.
+  Future<SurgicalExtractionResult> extractFromImageBytes(
+    List<Uint8List> imageBytesList,
+  ) async {
+    print('🔵 [SurgicalExtraction] Starting multi-image extraction...');
+    print('🔵 [SurgicalExtraction] Processing ${imageBytesList.length} images');
+
+    final llm = ChatOpenAI(
+      apiKey: apiKey,
+      defaultOptions: const ChatOpenAIOptions(
+        model: 'gpt-4o',
+        temperature: 0.1,
+      ),
+    );
+
+    // Build multimodal content with all images
+    final contentParts = <ChatMessageContent>[
+      ChatMessageContent.text(
+        'Extract surgical case data from these document pages. '
+        'Combine information from all pages into a single result:',
+      ),
+    ];
+
+    for (int i = 0; i < imageBytesList.length; i++) {
+      final base64Image = base64Encode(imageBytesList[i]);
+      contentParts.add(
+        ChatMessageContent.image(
+          data: base64Image,
+          mimeType: 'image/png',
+        ),
+      );
+    }
+
+    final messages = [
+      ChatMessage.system(_systemPrompt),
+      ChatMessage.human(ChatMessageContent.multiModal(contentParts)),
+    ];
+
+    print('🔵 [SurgicalExtraction] Calling OpenAI Vision API with ${imageBytesList.length} images...');
+    final response = await llm.invoke(PromptValue.chat(messages));
+    print('🟢 [SurgicalExtraction] Response received!');
+    print('🟢 [SurgicalExtraction] Raw response: ${response.output.content}');
 
     return _parseResponse(response.output.content);
   }
