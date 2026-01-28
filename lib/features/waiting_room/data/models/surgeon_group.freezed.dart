@@ -42,6 +42,13 @@ mixin _$SurgeonGroup {
   /// Original group ID if this is a detached group
   String? get detachedFromGroupId => throw _privateConstructorUsedError;
 
+  /// Whether this group has been exported to Daily Planner
+  bool get isExported => throw _privateConstructorUsedError;
+
+  /// ID of the anaesthesiologist it was exported to
+  String? get exportedToAnaesthesiologistId =>
+      throw _privateConstructorUsedError;
+
   /// Timestamp when this group was created
   DateTime get createdAt => throw _privateConstructorUsedError;
 
@@ -70,6 +77,8 @@ abstract class $SurgeonGroupCopyWith<$Res> {
     String sourceFileName,
     bool isDetached,
     String? detachedFromGroupId,
+    bool isExported,
+    String? exportedToAnaesthesiologistId,
     DateTime createdAt,
   });
 }
@@ -96,6 +105,8 @@ class _$SurgeonGroupCopyWithImpl<$Res, $Val extends SurgeonGroup>
     Object? sourceFileName = null,
     Object? isDetached = null,
     Object? detachedFromGroupId = freezed,
+    Object? isExported = null,
+    Object? exportedToAnaesthesiologistId = freezed,
     Object? createdAt = null,
   }) {
     return _then(
@@ -128,6 +139,15 @@ class _$SurgeonGroupCopyWithImpl<$Res, $Val extends SurgeonGroup>
                 ? _value.detachedFromGroupId
                 : detachedFromGroupId // ignore: cast_nullable_to_non_nullable
                       as String?,
+            isExported: null == isExported
+                ? _value.isExported
+                : isExported // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            exportedToAnaesthesiologistId:
+                freezed == exportedToAnaesthesiologistId
+                ? _value.exportedToAnaesthesiologistId
+                : exportedToAnaesthesiologistId // ignore: cast_nullable_to_non_nullable
+                      as String?,
             createdAt: null == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
@@ -155,6 +175,8 @@ abstract class _$$SurgeonGroupImplCopyWith<$Res>
     String sourceFileName,
     bool isDetached,
     String? detachedFromGroupId,
+    bool isExported,
+    String? exportedToAnaesthesiologistId,
     DateTime createdAt,
   });
 }
@@ -180,6 +202,8 @@ class __$$SurgeonGroupImplCopyWithImpl<$Res>
     Object? sourceFileName = null,
     Object? isDetached = null,
     Object? detachedFromGroupId = freezed,
+    Object? isExported = null,
+    Object? exportedToAnaesthesiologistId = freezed,
     Object? createdAt = null,
   }) {
     return _then(
@@ -212,6 +236,14 @@ class __$$SurgeonGroupImplCopyWithImpl<$Res>
             ? _value.detachedFromGroupId
             : detachedFromGroupId // ignore: cast_nullable_to_non_nullable
                   as String?,
+        isExported: null == isExported
+            ? _value.isExported
+            : isExported // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        exportedToAnaesthesiologistId: freezed == exportedToAnaesthesiologistId
+            ? _value.exportedToAnaesthesiologistId
+            : exportedToAnaesthesiologistId // ignore: cast_nullable_to_non_nullable
+                  as String?,
         createdAt: null == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
@@ -232,6 +264,8 @@ class _$SurgeonGroupImpl implements _SurgeonGroup {
     required this.sourceFileName,
     this.isDetached = false,
     this.detachedFromGroupId,
+    this.isExported = false,
+    this.exportedToAnaesthesiologistId,
     required this.createdAt,
   });
 
@@ -267,13 +301,22 @@ class _$SurgeonGroupImpl implements _SurgeonGroup {
   @override
   final String? detachedFromGroupId;
 
+  /// Whether this group has been exported to Daily Planner
+  @override
+  @JsonKey()
+  final bool isExported;
+
+  /// ID of the anaesthesiologist it was exported to
+  @override
+  final String? exportedToAnaesthesiologistId;
+
   /// Timestamp when this group was created
   @override
   final DateTime createdAt;
 
   @override
   String toString() {
-    return 'SurgeonGroup(id: $id, surgeonName: $surgeonName, hospital: $hospital, startTime: $startTime, sourceFileName: $sourceFileName, isDetached: $isDetached, detachedFromGroupId: $detachedFromGroupId, createdAt: $createdAt)';
+    return 'SurgeonGroup(id: $id, surgeonName: $surgeonName, hospital: $hospital, startTime: $startTime, sourceFileName: $sourceFileName, isDetached: $isDetached, detachedFromGroupId: $detachedFromGroupId, isExported: $isExported, exportedToAnaesthesiologistId: $exportedToAnaesthesiologistId, createdAt: $createdAt)';
   }
 
   @override
@@ -294,6 +337,14 @@ class _$SurgeonGroupImpl implements _SurgeonGroup {
                 other.isDetached == isDetached) &&
             (identical(other.detachedFromGroupId, detachedFromGroupId) ||
                 other.detachedFromGroupId == detachedFromGroupId) &&
+            (identical(other.isExported, isExported) ||
+                other.isExported == isExported) &&
+            (identical(
+                  other.exportedToAnaesthesiologistId,
+                  exportedToAnaesthesiologistId,
+                ) ||
+                other.exportedToAnaesthesiologistId ==
+                    exportedToAnaesthesiologistId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt));
   }
@@ -309,6 +360,8 @@ class _$SurgeonGroupImpl implements _SurgeonGroup {
     sourceFileName,
     isDetached,
     detachedFromGroupId,
+    isExported,
+    exportedToAnaesthesiologistId,
     createdAt,
   );
 
@@ -335,6 +388,8 @@ abstract class _SurgeonGroup implements SurgeonGroup {
     required final String sourceFileName,
     final bool isDetached,
     final String? detachedFromGroupId,
+    final bool isExported,
+    final String? exportedToAnaesthesiologistId,
     required final DateTime createdAt,
   }) = _$SurgeonGroupImpl;
 
@@ -368,6 +423,14 @@ abstract class _SurgeonGroup implements SurgeonGroup {
   /// Original group ID if this is a detached group
   @override
   String? get detachedFromGroupId;
+
+  /// Whether this group has been exported to Daily Planner
+  @override
+  bool get isExported;
+
+  /// ID of the anaesthesiologist it was exported to
+  @override
+  String? get exportedToAnaesthesiologistId;
 
   /// Timestamp when this group was created
   @override

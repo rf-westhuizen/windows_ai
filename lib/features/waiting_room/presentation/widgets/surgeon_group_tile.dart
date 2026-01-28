@@ -20,6 +20,16 @@ class SurgeonGroupTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // If exported, show collapsed greyed out version
+    if (group.isExported) {
+      return _buildExportedTile(context, ref);
+    }
+
+    return _buildActiveTile(context, ref);
+  }
+
+  /// Build the active (non-exported) tile with full cases list.
+  Widget _buildActiveTile(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -37,7 +47,7 @@ class SurgeonGroupTile extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          _buildHeader(context, ref),
+          _buildActiveHeader(context, ref),
 
           // Divider
           Divider(height: 1, color: Colors.grey[200]),
@@ -72,82 +82,100 @@ class SurgeonGroupTile extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+  /// Build the exported (collapsed, greyed out) tile.
+  Widget _buildExportedTile(BuildContext context, WidgetRef ref) {
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: 0.6,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[300]!),
+        ),
+        child: _buildExportedHeader(context, ref),
+      ),
+    );
+  }
+
+  /// Build the active header with full controls.
+  Widget _buildActiveHeader(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           // Surgeon icon
           Container(
-            width: 48,
-            height: 48,
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: group.isDetached ? Colors.grey[200] : Colors.grey[100],
+              color: Colors.grey[100],
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              Icons.person_outline,
+              Icons.medical_services,
+              size: 24,
               color: Colors.grey[700],
             ),
           ),
           const SizedBox(width: 16),
 
-          // Surgeon info
+          // Group info
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        group.surgeonName ?? 'Unknown Surgeon',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    if (group.isDetached) ...[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'Detached',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
+                Text(
+                  group.surgeonName ?? 'Unknown Surgeon',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.local_hospital_outlined,
-                        size: 14, color: Colors.grey[500]),
-                    const SizedBox(width: 4),
-                    Text(
-                      group.hospital ?? 'Unknown Hospital',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(width: 16),
-                    Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
-                    const SizedBox(width: 4),
-                    Text(
-                      group.startTime ?? '--:--',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                    if (group.hospital != null) ...[
+                      Icon(Icons.location_on_outlined,
+                          size: 14, color: Colors.grey[600]),
+                      const SizedBox(width: 4),
+                      Text(
+                        group.hospital!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    if (group.startTime != null) ...[
+                      Icon(Icons.access_time,
+                          size: 14, color: Colors.grey[600]),
+                      const SizedBox(width: 4),
+                      Text(
+                        group.startTime!,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${cases.length} case${cases.length != 1 ? 's' : ''}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -155,52 +183,163 @@ class SurgeonGroupTile extends ConsumerWidget {
             ),
           ),
 
-          // Actions
-          FilledButton.icon(
-            onPressed: () => _showExportDialog(context, ref),
-            icon: const Icon(Icons.upload_outlined, size: 18),
-            label: const Text('Export'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.black87,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              minimumSize: const Size(0, 36),
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.sort),
-            tooltip: 'Sort by time',
-            onPressed: () => ref
-                .read(waitingRoomProvider.notifier)
-                .sortGroupByTime(group.id),
-            color: Colors.grey[600],
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            tooltip: 'Edit group',
-            onPressed: () => _showEditDialog(context, ref),
-            color: Colors.grey[600],
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: 'Delete group',
-            onPressed: () => _confirmDelete(context, ref),
-            color: Colors.grey[600],
+          // Action buttons
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Sort by time
+              IconButton(
+                icon: const Icon(Icons.sort),
+                tooltip: 'Sort by time',
+                onPressed: () => ref
+                    .read(waitingRoomProvider.notifier)
+                    .sortGroupByTime(group.id),
+                iconSize: 20,
+                color: Colors.grey[600],
+              ),
+
+              // Edit group
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: 'Edit group',
+                onPressed: () => _showEditDialog(context),
+                iconSize: 20,
+                color: Colors.grey[600],
+              ),
+
+              // Export to planner
+              IconButton(
+                icon: const Icon(Icons.send_outlined),
+                tooltip: 'Export to Daily Planner',
+                onPressed: cases.isNotEmpty
+                    ? () => _showExportDialog(context)
+                    : null,
+                iconSize: 20,
+                color: Colors.grey[600],
+              ),
+
+              // Delete group
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Delete group',
+                onPressed: () => _confirmDelete(context, ref),
+                iconSize: 20,
+                color: Colors.grey[600],
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  void _showEditDialog(BuildContext context, WidgetRef ref) {
+  /// Build the collapsed header for exported groups.
+  Widget _buildExportedHeader(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          // Exported check icon
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.green[50],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.check_circle,
+              size: 20,
+              color: Colors.green[600],
+            ),
+          ),
+          const SizedBox(width: 12),
+
+          // Group info (collapsed)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  group.surgeonName ?? 'Unknown Surgeon',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    if (group.hospital != null) ...[
+                      Text(
+                        group.hospital!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Text(
+                      '${cases.length} case${cases.length != 1 ? 's' : ''}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // Exported badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.green[100],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check, size: 14, color: Colors.green[700]),
+                const SizedBox(width: 4),
+                Text(
+                  'Exported',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.green[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(width: 8),
+
+          // Delete option
+          IconButton(
+            icon: Icon(Icons.close, size: 18, color: Colors.grey[400]),
+            tooltip: 'Remove from list',
+            onPressed: () => _confirmDelete(context, ref),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Show edit group dialog.
+  void _showEditDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => EditGroupDialog(group: group),
     );
   }
 
-  void _showExportDialog(BuildContext context, WidgetRef ref) {
+  /// Show export to planner dialog.
+  void _showExportDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => ExportToPlannnerDialog(
@@ -210,13 +349,16 @@ class SurgeonGroupTile extends ConsumerWidget {
     );
   }
 
+  /// Confirm and delete group.
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Group'),
         content: Text(
-          'Delete "${group.surgeonName ?? 'this group'}" and all ${cases.length} case(s)?',
+          group.isExported
+              ? 'Remove this exported group from the waiting room?'
+              : 'Delete "${group.surgeonName ?? 'this group'}" and all its cases?',
         ),
         actions: [
           TextButton(

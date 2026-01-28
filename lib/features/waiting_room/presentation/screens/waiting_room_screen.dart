@@ -106,24 +106,67 @@ class WaitingRoomScreen extends ConsumerWidget {
           Expanded(
             child: state.groups.isEmpty
                 ? const _EmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: state.groups.length,
-                    itemBuilder: (context, index) {
-                      final group = state.groups[index];
-                      final cases = state.casesForGroup(group.id);
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: SurgeonGroupTile(
-                          group: group,
-                          cases: cases,
-                        ),
-                      );
-                    },
-                  ),
+                : _buildGroupsList(state),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGroupsList(WaitingRoomState state) {
+    final activeGroups = state.activeGroups;
+    final exportedGroups = state.exportedGroups;
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // Active groups first
+        ...activeGroups.map((group) {
+          final cases = state.casesForGroup(group.id);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: SurgeonGroupTile(
+              group: group,
+              cases: cases,
+            ),
+          );
+        }),
+
+        // Divider if there are both active and exported groups
+        if (activeGroups.isNotEmpty && exportedGroups.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Expanded(child: Divider(color: Colors.grey[300])),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Exported',
+                    style: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Expanded(child: Divider(color: Colors.grey[300])),
+              ],
+            ),
+          ),
+
+        // Exported groups at bottom
+        ...exportedGroups.map((group) {
+          final cases = state.casesForGroup(group.id);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: SurgeonGroupTile(
+              group: group,
+              cases: cases,
+            ),
+          );
+        }),
+      ],
     );
   }
 

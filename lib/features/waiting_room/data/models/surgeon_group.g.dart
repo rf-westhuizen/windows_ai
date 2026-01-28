@@ -15,6 +15,9 @@ _$SurgeonGroupImpl _$$SurgeonGroupImplFromJson(Map<String, dynamic> json) =>
       sourceFileName: json['sourceFileName'] as String,
       isDetached: json['isDetached'] as bool? ?? false,
       detachedFromGroupId: json['detachedFromGroupId'] as String?,
+      isExported: json['isExported'] as bool? ?? false,
+      exportedToAnaesthesiologistId:
+          json['exportedToAnaesthesiologistId'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
 
@@ -27,5 +30,7 @@ Map<String, dynamic> _$$SurgeonGroupImplToJson(_$SurgeonGroupImpl instance) =>
       'sourceFileName': instance.sourceFileName,
       'isDetached': instance.isDetached,
       'detachedFromGroupId': instance.detachedFromGroupId,
+      'isExported': instance.isExported,
+      'exportedToAnaesthesiologistId': instance.exportedToAnaesthesiologistId,
       'createdAt': instance.createdAt.toIso8601String(),
     };

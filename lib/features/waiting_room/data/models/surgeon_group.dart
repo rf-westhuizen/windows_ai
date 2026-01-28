@@ -31,6 +31,12 @@ class SurgeonGroup with _$SurgeonGroup {
     /// Original group ID if this is a detached group
     String? detachedFromGroupId,
 
+    /// Whether this group has been exported to Daily Planner
+    @Default(false) bool isExported,
+
+    /// ID of the anaesthesiologist it was exported to
+    String? exportedToAnaesthesiologistId,
+
     /// Timestamp when this group was created
     required DateTime createdAt,
   }) = _SurgeonGroup;

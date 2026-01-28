@@ -72,6 +72,14 @@ class WaitingRoomState {
     return surgicalCase.groupId != surgicalCase.originalGroupId &&
         groups.any((g) => g.id == surgicalCase.originalGroupId);
   }
+
+  /// Get active (non-exported) groups.
+  List<SurgeonGroup> get activeGroups =>
+      groups.where((g) => !g.isExported).toList();
+
+  /// Get exported groups.
+  List<SurgeonGroup> get exportedGroups =>
+      groups.where((g) => g.isExported).toList();
 }
 
 /// State notifier for managing the waiting room.
@@ -297,6 +305,22 @@ class WaitingRoomNotifier extends Notifier<WaitingRoomState> {
   /// Clear any error.
   void clearError() {
     state = state.copyWith(error: null);
+  }
+
+  /// Mark a group as exported to Daily Planner.
+  void markAsExported(String groupId, String anaesthesiologistId) {
+    state = state.copyWith(
+      groups: state.groups.map((g) {
+        if (g.id == groupId) {
+          return g.copyWith(
+            isExported: true,
+            exportedToAnaesthesiologistId: anaesthesiologistId,
+          );
+        }
+        return g;
+      }).toList(),
+    );
+    print('🟢 [WaitingRoom] Marked group $groupId as exported');
   }
 
   /// Sort all cases within a group by start time (earliest first).

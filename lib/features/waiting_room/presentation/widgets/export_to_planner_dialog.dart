@@ -237,6 +237,12 @@ class _ExportToPlannnerDialogState
       );
     }
 
+    // Mark the group as exported in waiting room
+    ref.read(waitingRoomProvider.notifier).markAsExported(
+          widget.group.id,
+          anaesthesiologistId,
+        );
+
     // Navigate to planner
     ref.read(navigateToPlannerProvider.notifier).state = true;
 
