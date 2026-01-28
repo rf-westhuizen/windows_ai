@@ -1,16 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'planner_case.freezed.dart';
-part 'planner_case.g.dart';
+part 'planner_surgical_case.freezed.dart';
+part 'planner_surgical_case.g.dart';
 
-/// Represents a surgical case in the Daily Planner.
+/// Represents a surgical case in the daily planner.
 @freezed
-class PlannerCase with _$PlannerCase {
-  const factory PlannerCase({
+class PlannerSurgicalCase with _$PlannerSurgicalCase {
+  const factory PlannerSurgicalCase({
     /// Unique identifier
     required String id,
 
-    /// ID of the parent surgeon group
+    /// Parent surgeon group ID
     required String surgeonGroupId,
 
     /// Patient's full name
@@ -34,16 +34,16 @@ class PlannerCase with _$PlannerCase {
     /// ICD-10 diagnosis codes
     @Default([]) List<String> icd10Codes,
 
-    /// Hospital name (can override group's hospital)
+    /// Hospital name
     String? hospital,
 
     /// Additional notes
     String? notes,
 
-    /// Order index for sorting within a group
+    /// Order index for sorting
     @Default(0) int orderIndex,
-  }) = _PlannerCase;
+  }) = _PlannerSurgicalCase;
 
-  factory PlannerCase.fromJson(Map<String, dynamic> json) =>
-      _$PlannerCaseFromJson(json);
+  factory PlannerSurgicalCase.fromJson(Map<String, dynamic> json) =>
+      _$PlannerSurgicalCaseFromJson(json);
 }

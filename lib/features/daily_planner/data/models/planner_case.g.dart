@@ -9,27 +9,35 @@ part of 'planner_case.dart';
 _$PlannerCaseImpl _$$PlannerCaseImplFromJson(Map<String, dynamic> json) =>
     _$PlannerCaseImpl(
       id: json['id'] as String,
-      patientName: json['patientName'] as String,
-      age: (json['age'] as num).toInt(),
-      surgeonName: json['surgeonName'] as String,
-      anaesthetistName: json['anaesthetistName'] as String,
-      ward: json['ward'] as String,
-      operation: json['operation'] as String,
-      time: DateTime.parse(json['time'] as String),
-      durationMinutes: (json['durationMinutes'] as num).toInt(),
-      doctorIndex: (json['doctorIndex'] as num).toInt(),
+      surgeonGroupId: json['surgeonGroupId'] as String,
+      patientName: json['patientName'] as String?,
+      patientAge: json['patientAge'] as String?,
+      operation: json['operation'] as String?,
+      startTime: json['startTime'] as String?,
+      durationMinutes: (json['durationMinutes'] as num?)?.toInt(),
+      medicalAid: json['medicalAid'] as String?,
+      icd10Codes:
+          (json['icd10Codes'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      hospital: json['hospital'] as String?,
+      notes: json['notes'] as String?,
+      orderIndex: (json['orderIndex'] as num?)?.toInt() ?? 0,
     );
 
 Map<String, dynamic> _$$PlannerCaseImplToJson(_$PlannerCaseImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'surgeonGroupId': instance.surgeonGroupId,
       'patientName': instance.patientName,
-      'age': instance.age,
-      'surgeonName': instance.surgeonName,
-      'anaesthetistName': instance.anaesthetistName,
-      'ward': instance.ward,
+      'patientAge': instance.patientAge,
       'operation': instance.operation,
-      'time': instance.time.toIso8601String(),
+      'startTime': instance.startTime,
       'durationMinutes': instance.durationMinutes,
-      'doctorIndex': instance.doctorIndex,
+      'medicalAid': instance.medicalAid,
+      'icd10Codes': instance.icd10Codes,
+      'hospital': instance.hospital,
+      'notes': instance.notes,
+      'orderIndex': instance.orderIndex,
     };

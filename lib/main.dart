@@ -6,10 +6,10 @@ import 'main_navigation.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Load environment variables
   await dotenv.load(fileName: '.env');
-  
+
   runApp(
     const ProviderScope(
       child: DocumentExtractorApp(),
@@ -18,8 +18,6 @@ Future<void> main() async {
 }
 
 /// Main application widget.
-/// 
-/// Sets up the Material 3 theme and root navigation.
 class DocumentExtractorApp extends StatelessWidget {
   const DocumentExtractorApp({super.key});
 
@@ -28,38 +26,59 @@ class DocumentExtractorApp extends StatelessWidget {
     return MaterialApp(
       title: 'AI Document Tools',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6750A4),
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        cardTheme: const CardThemeData(
-          elevation: 2,
-          clipBehavior: Clip.antiAlias,
-        ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF6750A4),
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        cardTheme: const CardThemeData(
-          elevation: 2,
-          clipBehavior: Clip.antiAlias,
-        ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
-          elevation: 0,
-        ),
-      ),
-      themeMode: ThemeMode.system,
+      theme: _buildLightTheme(),
+      darkTheme: _buildDarkTheme(),
+      themeMode: ThemeMode.light,
       home: const MainNavigationScreen(),
     );
   }
+}
+
+/// Build light theme with professional monochrome colors.
+ThemeData _buildLightTheme() {
+  return ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.grey,
+      brightness: Brightness.light,
+    ).copyWith(
+      surface: Colors.white,
+      onSurface: Colors.black87,
+    ),
+    useMaterial3: true,
+    scaffoldBackgroundColor: Colors.grey[100],
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black87,
+      elevation: 0,
+      centerTitle: true,
+    ),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey[300]!),
+      ),
+    ),
+    dividerColor: Colors.grey[200],
+  );
+}
+
+/// Build dark theme.
+ThemeData _buildDarkTheme() {
+  return ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.grey,
+      brightness: Brightness.dark,
+    ),
+    useMaterial3: true,
+    cardTheme: const CardThemeData(
+      elevation: 2,
+      clipBehavior: Clip.antiAlias,
+    ),
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+      elevation: 0,
+    ),
+  );
 }

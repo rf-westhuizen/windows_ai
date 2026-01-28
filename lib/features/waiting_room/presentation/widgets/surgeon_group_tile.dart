@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/models.dart';
 import '../../providers/waiting_room_providers.dart';
 import 'edit_group_dialog.dart';
+import 'export_to_planner_dialog.dart';
 import 'surgical_case_tile.dart';
 
 /// Main tile displaying a surgeon's case list.
@@ -155,6 +156,18 @@ class SurgeonGroupTile extends ConsumerWidget {
           ),
 
           // Actions
+          FilledButton.icon(
+            onPressed: () => _showExportDialog(context, ref),
+            icon: const Icon(Icons.upload_outlined, size: 18),
+            label: const Text('Export'),
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.black87,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              minimumSize: const Size(0, 36),
+            ),
+          ),
+          const SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.sort),
             tooltip: 'Sort by time',
@@ -184,6 +197,16 @@ class SurgeonGroupTile extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => EditGroupDialog(group: group),
+    );
+  }
+
+  void _showExportDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => ExportToPlannnerDialog(
+        group: group,
+        cases: cases,
+      ),
     );
   }
 

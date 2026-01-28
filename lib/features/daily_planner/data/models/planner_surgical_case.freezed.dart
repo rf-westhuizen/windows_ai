@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'planner_case.dart';
+part of 'planner_surgical_case.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,16 +15,16 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
-PlannerCase _$PlannerCaseFromJson(Map<String, dynamic> json) {
-  return _PlannerCase.fromJson(json);
+PlannerSurgicalCase _$PlannerSurgicalCaseFromJson(Map<String, dynamic> json) {
+  return _PlannerSurgicalCase.fromJson(json);
 }
 
 /// @nodoc
-mixin _$PlannerCase {
+mixin _$PlannerSurgicalCase {
   /// Unique identifier
   String get id => throw _privateConstructorUsedError;
 
-  /// ID of the parent surgeon group
+  /// Parent surgeon group ID
   String get surgeonGroupId => throw _privateConstructorUsedError;
 
   /// Patient's full name
@@ -48,31 +48,31 @@ mixin _$PlannerCase {
   /// ICD-10 diagnosis codes
   List<String> get icd10Codes => throw _privateConstructorUsedError;
 
-  /// Hospital name (can override group's hospital)
+  /// Hospital name
   String? get hospital => throw _privateConstructorUsedError;
 
   /// Additional notes
   String? get notes => throw _privateConstructorUsedError;
 
-  /// Order index for sorting within a group
+  /// Order index for sorting
   int get orderIndex => throw _privateConstructorUsedError;
 
-  /// Serializes this PlannerCase to a JSON map.
+  /// Serializes this PlannerSurgicalCase to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of PlannerCase
+  /// Create a copy of PlannerSurgicalCase
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $PlannerCaseCopyWith<PlannerCase> get copyWith =>
+  $PlannerSurgicalCaseCopyWith<PlannerSurgicalCase> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $PlannerCaseCopyWith<$Res> {
-  factory $PlannerCaseCopyWith(
-    PlannerCase value,
-    $Res Function(PlannerCase) then,
-  ) = _$PlannerCaseCopyWithImpl<$Res, PlannerCase>;
+abstract class $PlannerSurgicalCaseCopyWith<$Res> {
+  factory $PlannerSurgicalCaseCopyWith(
+    PlannerSurgicalCase value,
+    $Res Function(PlannerSurgicalCase) then,
+  ) = _$PlannerSurgicalCaseCopyWithImpl<$Res, PlannerSurgicalCase>;
   @useResult
   $Res call({
     String id,
@@ -91,16 +91,16 @@ abstract class $PlannerCaseCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$PlannerCaseCopyWithImpl<$Res, $Val extends PlannerCase>
-    implements $PlannerCaseCopyWith<$Res> {
-  _$PlannerCaseCopyWithImpl(this._value, this._then);
+class _$PlannerSurgicalCaseCopyWithImpl<$Res, $Val extends PlannerSurgicalCase>
+    implements $PlannerSurgicalCaseCopyWith<$Res> {
+  _$PlannerSurgicalCaseCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of PlannerCase
+  /// Create a copy of PlannerSurgicalCase
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -175,12 +175,12 @@ class _$PlannerCaseCopyWithImpl<$Res, $Val extends PlannerCase>
 }
 
 /// @nodoc
-abstract class _$$PlannerCaseImplCopyWith<$Res>
-    implements $PlannerCaseCopyWith<$Res> {
-  factory _$$PlannerCaseImplCopyWith(
-    _$PlannerCaseImpl value,
-    $Res Function(_$PlannerCaseImpl) then,
-  ) = __$$PlannerCaseImplCopyWithImpl<$Res>;
+abstract class _$$PlannerSurgicalCaseImplCopyWith<$Res>
+    implements $PlannerSurgicalCaseCopyWith<$Res> {
+  factory _$$PlannerSurgicalCaseImplCopyWith(
+    _$PlannerSurgicalCaseImpl value,
+    $Res Function(_$PlannerSurgicalCaseImpl) then,
+  ) = __$$PlannerSurgicalCaseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({
@@ -200,15 +200,15 @@ abstract class _$$PlannerCaseImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$PlannerCaseImplCopyWithImpl<$Res>
-    extends _$PlannerCaseCopyWithImpl<$Res, _$PlannerCaseImpl>
-    implements _$$PlannerCaseImplCopyWith<$Res> {
-  __$$PlannerCaseImplCopyWithImpl(
-    _$PlannerCaseImpl _value,
-    $Res Function(_$PlannerCaseImpl) _then,
+class __$$PlannerSurgicalCaseImplCopyWithImpl<$Res>
+    extends _$PlannerSurgicalCaseCopyWithImpl<$Res, _$PlannerSurgicalCaseImpl>
+    implements _$$PlannerSurgicalCaseImplCopyWith<$Res> {
+  __$$PlannerSurgicalCaseImplCopyWithImpl(
+    _$PlannerSurgicalCaseImpl _value,
+    $Res Function(_$PlannerSurgicalCaseImpl) _then,
   ) : super(_value, _then);
 
-  /// Create a copy of PlannerCase
+  /// Create a copy of PlannerSurgicalCase
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -227,7 +227,7 @@ class __$$PlannerCaseImplCopyWithImpl<$Res>
     Object? orderIndex = null,
   }) {
     return _then(
-      _$PlannerCaseImpl(
+      _$PlannerSurgicalCaseImpl(
         id: null == id
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
@@ -283,8 +283,8 @@ class __$$PlannerCaseImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$PlannerCaseImpl implements _PlannerCase {
-  const _$PlannerCaseImpl({
+class _$PlannerSurgicalCaseImpl implements _PlannerSurgicalCase {
+  const _$PlannerSurgicalCaseImpl({
     required this.id,
     required this.surgeonGroupId,
     this.patientName,
@@ -299,14 +299,14 @@ class _$PlannerCaseImpl implements _PlannerCase {
     this.orderIndex = 0,
   }) : _icd10Codes = icd10Codes;
 
-  factory _$PlannerCaseImpl.fromJson(Map<String, dynamic> json) =>
-      _$$PlannerCaseImplFromJson(json);
+  factory _$PlannerSurgicalCaseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PlannerSurgicalCaseImplFromJson(json);
 
   /// Unique identifier
   @override
   final String id;
 
-  /// ID of the parent surgeon group
+  /// Parent surgeon group ID
   @override
   final String surgeonGroupId;
 
@@ -346,7 +346,7 @@ class _$PlannerCaseImpl implements _PlannerCase {
     return EqualUnmodifiableListView(_icd10Codes);
   }
 
-  /// Hospital name (can override group's hospital)
+  /// Hospital name
   @override
   final String? hospital;
 
@@ -354,21 +354,21 @@ class _$PlannerCaseImpl implements _PlannerCase {
   @override
   final String? notes;
 
-  /// Order index for sorting within a group
+  /// Order index for sorting
   @override
   @JsonKey()
   final int orderIndex;
 
   @override
   String toString() {
-    return 'PlannerCase(id: $id, surgeonGroupId: $surgeonGroupId, patientName: $patientName, patientAge: $patientAge, operation: $operation, startTime: $startTime, durationMinutes: $durationMinutes, medicalAid: $medicalAid, icd10Codes: $icd10Codes, hospital: $hospital, notes: $notes, orderIndex: $orderIndex)';
+    return 'PlannerSurgicalCase(id: $id, surgeonGroupId: $surgeonGroupId, patientName: $patientName, patientAge: $patientAge, operation: $operation, startTime: $startTime, durationMinutes: $durationMinutes, medicalAid: $medicalAid, icd10Codes: $icd10Codes, hospital: $hospital, notes: $notes, orderIndex: $orderIndex)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$PlannerCaseImpl &&
+            other is _$PlannerSurgicalCaseImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.surgeonGroupId, surgeonGroupId) ||
                 other.surgeonGroupId == surgeonGroupId) &&
@@ -413,22 +413,25 @@ class _$PlannerCaseImpl implements _PlannerCase {
     orderIndex,
   );
 
-  /// Create a copy of PlannerCase
+  /// Create a copy of PlannerSurgicalCase
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$PlannerCaseImplCopyWith<_$PlannerCaseImpl> get copyWith =>
-      __$$PlannerCaseImplCopyWithImpl<_$PlannerCaseImpl>(this, _$identity);
+  _$$PlannerSurgicalCaseImplCopyWith<_$PlannerSurgicalCaseImpl> get copyWith =>
+      __$$PlannerSurgicalCaseImplCopyWithImpl<_$PlannerSurgicalCaseImpl>(
+        this,
+        _$identity,
+      );
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PlannerCaseImplToJson(this);
+    return _$$PlannerSurgicalCaseImplToJson(this);
   }
 }
 
-abstract class _PlannerCase implements PlannerCase {
-  const factory _PlannerCase({
+abstract class _PlannerSurgicalCase implements PlannerSurgicalCase {
+  const factory _PlannerSurgicalCase({
     required final String id,
     required final String surgeonGroupId,
     final String? patientName,
@@ -441,16 +444,16 @@ abstract class _PlannerCase implements PlannerCase {
     final String? hospital,
     final String? notes,
     final int orderIndex,
-  }) = _$PlannerCaseImpl;
+  }) = _$PlannerSurgicalCaseImpl;
 
-  factory _PlannerCase.fromJson(Map<String, dynamic> json) =
-      _$PlannerCaseImpl.fromJson;
+  factory _PlannerSurgicalCase.fromJson(Map<String, dynamic> json) =
+      _$PlannerSurgicalCaseImpl.fromJson;
 
   /// Unique identifier
   @override
   String get id;
 
-  /// ID of the parent surgeon group
+  /// Parent surgeon group ID
   @override
   String get surgeonGroupId;
 
@@ -482,7 +485,7 @@ abstract class _PlannerCase implements PlannerCase {
   @override
   List<String> get icd10Codes;
 
-  /// Hospital name (can override group's hospital)
+  /// Hospital name
   @override
   String? get hospital;
 
@@ -490,14 +493,14 @@ abstract class _PlannerCase implements PlannerCase {
   @override
   String? get notes;
 
-  /// Order index for sorting within a group
+  /// Order index for sorting
   @override
   int get orderIndex;
 
-  /// Create a copy of PlannerCase
+  /// Create a copy of PlannerSurgicalCase
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$PlannerCaseImplCopyWith<_$PlannerCaseImpl> get copyWith =>
+  _$$PlannerSurgicalCaseImplCopyWith<_$PlannerSurgicalCaseImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -5,7 +5,7 @@ import 'core/providers/shared_providers.dart';
 import 'features/daily_planner/presentation/screens/daily_planner_screen.dart';
 import 'features/waiting_room/presentation/screens/waiting_room_screen.dart';
 
-/// Main navigation screen with bottom navigation.
+/// Main navigation screen with side navigation rail.
 class MainNavigationScreen extends ConsumerStatefulWidget {
   const MainNavigationScreen({super.key});
 
@@ -24,34 +24,57 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Listen for navigation trigger from extraction screen
+    // Listen for navigation trigger from export
     ref.listen(navigateToPlannerProvider, (prev, next) {
       if (next == true) {
-        setState(() => _currentIndex = 1); // Switch to planner tab
-        // Reset the trigger
+        setState(() => _currentIndex = 1);
         ref.read(navigateToPlannerProvider.notifier).state = false;
       }
     });
 
     return Scaffold(
-      body: _screens[_currentIndex],
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.white,
-        indicatorColor: Colors.grey[200],
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          setState(() => _currentIndex = index);
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.medical_services_outlined),
-            selectedIcon: Icon(Icons.medical_services),
-            label: 'Waiting Room',
+      body: Row(
+        children: [
+          // Navigation Rail
+          NavigationRail(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (index) {
+              setState(() => _currentIndex = index);
+            },
+            backgroundColor: Colors.white,
+            labelType: NavigationRailLabelType.all,
+            leading: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Icon(
+                Icons.medical_services,
+                size: 32,
+                color: Colors.grey[800],
+              ),
+            ),
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.inbox_outlined),
+                selectedIcon: Icon(Icons.inbox),
+                label: Text('Waiting Room'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.calendar_month_outlined),
+                selectedIcon: Icon(Icons.calendar_month),
+                label: Text('Daily Planner'),
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.calendar_month_outlined),
-            selectedIcon: Icon(Icons.calendar_month),
-            label: 'Daily Planner',
+
+          // Divider
+          VerticalDivider(
+            width: 1,
+            thickness: 1,
+            color: Colors.grey[300],
+          ),
+
+          // Content
+          Expanded(
+            child: _screens[_currentIndex],
           ),
         ],
       ),
