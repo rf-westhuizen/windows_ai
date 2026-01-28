@@ -1,0 +1,290 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../document_extraction/data/services/pdf_extraction_service.dart';
+import '../data/models/models.dart';
+import '../data/services/services.dart';
+
+const _uuid = Uuid();
+
+/// Provider for the OpenAI API key.
+final waitingRoomApiKeyProvider = Provider<String>((ref) {
+  final key = dotenv.env['OPENAI_API_KEY'];
+  if (key == null || key.isEmpty || key == 'your_openai_api_key_here') {
+    throw Exception('OPENAI_API_KEY not configured in .env file');
+  }
+  return key;
+});
+
+/// Provider for the surgical extraction service.
+final surgicalExtractionServiceProvider =
+    Provider<SurgicalExtractionService>((ref) {
+  final apiKey = ref.watch(waitingRoomApiKeyProvider);
+  return SurgicalExtractionService(apiKey: apiKey);
+});
+
+/// Provider for the PDF service.
+final waitingRoomPdfServiceProvider = Provider<PdfExtractionService>((ref) {
+  return PdfExtractionService();
+});
+
+/// Combined state for the waiting room.
+class WaitingRoomState {
+  WaitingRoomState({
+    this.groups = const [],
+    this.cases = const [],
+    this.isProcessing = false,
+    this.processingFileName,
+    this.error,
+  });
+
+  final List<SurgeonGroup> groups;
+  final List<SurgicalCase> cases;
+  final bool isProcessing;
+  final String? processingFileName;
+  final String? error;
+
+  WaitingRoomState copyWith({
+    List<SurgeonGroup>? groups,
+    List<SurgicalCase>? cases,
+    bool? isProcessing,
+    String? processingFileName,
+    String? error,
+  }) {
+    return WaitingRoomState(
+      groups: groups ?? this.groups,
+      cases: cases ?? this.cases,
+      isProcessing: isProcessing ?? this.isProcessing,
+      processingFileName: processingFileName,
+      error: error,
+    );
+  }
+
+  /// Get all cases belonging to a specific group.
+  List<SurgicalCase> casesForGroup(String groupId) {
+    return cases.where((c) => c.groupId == groupId).toList()
+      ..sort((a, b) => a.orderIndex.compareTo(b.orderIndex));
+  }
+
+  /// Check if a case can be reattached (was detached from another group).
+  bool canReattach(SurgicalCase surgicalCase) {
+    return surgicalCase.groupId != surgicalCase.originalGroupId &&
+        groups.any((g) => g.id == surgicalCase.originalGroupId);
+  }
+}
+
+/// State notifier for managing the waiting room.
+class WaitingRoomNotifier extends Notifier<WaitingRoomState> {
+  @override
+  WaitingRoomState build() => WaitingRoomState();
+
+  /// Process a dropped file and extract surgical cases.
+  Future<void> processFile(String filePath, String fileName) async {
+    print('🟡 [WaitingRoom] Processing file: $fileName');
+
+    state = state.copyWith(
+      isProcessing: true,
+      processingFileName: fileName,
+      error: null,
+    );
+
+    try {
+      final extractionService = ref.read(surgicalExtractionServiceProvider);
+      final pdfService = ref.read(waitingRoomPdfServiceProvider);
+
+      SurgicalExtractionResult result;
+      final ext = fileName.toLowerCase().split('.').last;
+
+      if (ext == 'pdf') {
+        final text = await pdfService.extractText(filePath);
+        result = await extractionService.extractFromText(text);
+      } else {
+        result = await extractionService.extractFromImage(filePath);
+      }
+
+      // Create a new group for this file
+      final groupId = _uuid.v4();
+      final group = SurgeonGroup(
+        id: groupId,
+        surgeonName: result.surgeonName,
+        hospital: result.hospital,
+        startTime: result.startTime,
+        sourceFileName: fileName,
+        createdAt: DateTime.now(),
+      );
+
+      // Create cases linked to this group
+      final newCases = result.cases.asMap().entries.map((entry) {
+        final index = entry.key;
+        final extracted = entry.value;
+        return SurgicalCase(
+          id: _uuid.v4(),
+          groupId: groupId,
+          originalGroupId: groupId,
+          patientName: extracted.patientName,
+          patientAge: extracted.patientAge,
+          operation: extracted.operation,
+          startTime: extracted.startTime,
+          durationMinutes: extracted.durationMinutes,
+          medicalAid: extracted.medicalAid,
+          icd10Codes: extracted.icd10Codes,
+          hospital: extracted.hospital,
+          notes: extracted.notes,
+          orderIndex: index,
+        );
+      }).toList();
+
+      state = state.copyWith(
+        groups: [...state.groups, group],
+        cases: [...state.cases, ...newCases],
+        isProcessing: false,
+      );
+
+      print('🟢 [WaitingRoom] Created group with ${newCases.length} cases');
+    } catch (e) {
+      print('🔴 [WaitingRoom] Error: $e');
+      state = state.copyWith(
+        isProcessing: false,
+        error: e.toString(),
+      );
+    }
+  }
+
+  /// Detach a case from its group, creating a new group for it.
+  void detachCase(String caseId) {
+    final surgicalCase = state.cases.firstWhere((c) => c.id == caseId);
+    final originalGroup = state.groups.firstWhere(
+      (g) => g.id == surgicalCase.groupId,
+    );
+
+    // Create a new group for this detached case
+    final newGroupId = _uuid.v4();
+    final newGroup = SurgeonGroup(
+      id: newGroupId,
+      surgeonName: originalGroup.surgeonName,
+      hospital: surgicalCase.hospital ?? originalGroup.hospital,
+      startTime: surgicalCase.startTime,
+      sourceFileName: '${originalGroup.sourceFileName} (detached)',
+      isDetached: true,
+      detachedFromGroupId: surgicalCase.originalGroupId,
+      createdAt: DateTime.now(),
+    );
+
+    // Update the case to belong to the new group
+    final updatedCase = surgicalCase.copyWith(
+      groupId: newGroupId,
+      orderIndex: 0,
+    );
+
+    state = state.copyWith(
+      groups: [...state.groups, newGroup],
+      cases: state.cases.map((c) => c.id == caseId ? updatedCase : c).toList(),
+    );
+
+    print('🟢 [WaitingRoom] Detached case to new group: $newGroupId');
+  }
+
+  /// Reattach a case back to its original group.
+  void reattachCase(String caseId) {
+    final surgicalCase = state.cases.firstWhere((c) => c.id == caseId);
+    final currentGroupId = surgicalCase.groupId;
+
+    // Find max order index in the original group
+    final originalGroupCases = state.cases
+        .where((c) => c.groupId == surgicalCase.originalGroupId)
+        .toList();
+    final maxOrder = originalGroupCases.isEmpty
+        ? 0
+        : originalGroupCases
+            .map((c) => c.orderIndex)
+            .reduce((a, b) => a > b ? a : b);
+
+    // Move case back to original group
+    final updatedCase = surgicalCase.copyWith(
+      groupId: surgicalCase.originalGroupId,
+      orderIndex: maxOrder + 1,
+    );
+
+    // Remove the now-empty detached group
+    final remainingCasesInCurrentGroup =
+        state.cases.where((c) => c.groupId == currentGroupId && c.id != caseId);
+
+    List<SurgeonGroup> updatedGroups = state.groups;
+    if (remainingCasesInCurrentGroup.isEmpty) {
+      updatedGroups =
+          state.groups.where((g) => g.id != currentGroupId).toList();
+    }
+
+    state = state.copyWith(
+      groups: updatedGroups,
+      cases: state.cases.map((c) => c.id == caseId ? updatedCase : c).toList(),
+    );
+
+    print('🟢 [WaitingRoom] Reattached case to original group');
+  }
+
+  /// Update a surgeon group.
+  void updateGroup(SurgeonGroup updatedGroup) {
+    state = state.copyWith(
+      groups:
+          state.groups.map((g) => g.id == updatedGroup.id ? updatedGroup : g).toList(),
+    );
+  }
+
+  /// Update a surgical case.
+  void updateCase(SurgicalCase updatedCase) {
+    state = state.copyWith(
+      cases:
+          state.cases.map((c) => c.id == updatedCase.id ? updatedCase : c).toList(),
+    );
+  }
+
+  /// Delete a group and all its cases.
+  void deleteGroup(String groupId) {
+    state = state.copyWith(
+      groups: state.groups.where((g) => g.id != groupId).toList(),
+      cases: state.cases.where((c) => c.groupId != groupId).toList(),
+    );
+  }
+
+  /// Delete a single case.
+  void deleteCase(String caseId) {
+    final surgicalCase = state.cases.firstWhere((c) => c.id == caseId);
+    final groupId = surgicalCase.groupId;
+
+    final updatedCases = state.cases.where((c) => c.id != caseId).toList();
+    final remainingCasesInGroup =
+        updatedCases.where((c) => c.groupId == groupId);
+
+    // If group is empty and is a detached group, remove it
+    List<SurgeonGroup> updatedGroups = state.groups;
+    if (remainingCasesInGroup.isEmpty) {
+      final group = state.groups.firstWhere((g) => g.id == groupId);
+      if (group.isDetached) {
+        updatedGroups = state.groups.where((g) => g.id != groupId).toList();
+      }
+    }
+
+    state = state.copyWith(
+      groups: updatedGroups,
+      cases: updatedCases,
+    );
+  }
+
+  /// Clear all data.
+  void clearAll() {
+    state = WaitingRoomState();
+  }
+
+  /// Clear any error.
+  void clearError() {
+    state = state.copyWith(error: null);
+  }
+}
+
+/// Provider for the waiting room state.
+final waitingRoomProvider =
+    NotifierProvider<WaitingRoomNotifier, WaitingRoomState>(
+  WaitingRoomNotifier.new,
+);
