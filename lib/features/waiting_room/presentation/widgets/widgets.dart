@@ -1,3 +1,4 @@
+export 'detach_case_dialog.dart';
 export 'edit_case_dialog.dart';
 export 'edit_group_dialog.dart';
 export 'file_drop_zone.dart';

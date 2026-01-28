@@ -60,7 +60,10 @@ class SurgeonGroupTile extends ConsumerWidget {
               separatorBuilder: (_, __) =>
                   Divider(height: 1, color: Colors.grey[100]),
               itemBuilder: (context, index) {
-                return SurgicalCaseTile(surgicalCase: cases[index]);
+                return SurgicalCaseTile(
+                  surgicalCase: cases[index],
+                  parentGroup: group,
+                );
               },
             ),
         ],
@@ -152,6 +155,14 @@ class SurgeonGroupTile extends ConsumerWidget {
           ),
 
           // Actions
+          IconButton(
+            icon: const Icon(Icons.sort),
+            tooltip: 'Sort by time',
+            onPressed: () => ref
+                .read(waitingRoomProvider.notifier)
+                .sortGroupByTime(group.id),
+            color: Colors.grey[600],
+          ),
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             tooltip: 'Edit group',
