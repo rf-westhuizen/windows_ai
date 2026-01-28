@@ -2,7 +2,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../document_extraction/data/services/pdf_extraction_service.dart';
 import '../data/models/models.dart';
 import '../data/services/services.dart';
 
