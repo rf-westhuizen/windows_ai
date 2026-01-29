@@ -24,6 +24,9 @@ class SurgicalCase with _$SurgicalCase {
     /// Patient's age or birth year (as string for flexibility)
     String? patientAge,
 
+    /// Patient's gender (M/F)
+    String? patientGender,
+
     /// Operation/procedure to be performed
     String? operation,
 

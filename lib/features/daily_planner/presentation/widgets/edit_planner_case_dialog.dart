@@ -24,6 +24,7 @@ class _EditPlannerCaseDialogState extends ConsumerState<EditPlannerCaseDialog> {
   late final TextEditingController _medicalAidController;
   late final TextEditingController _icd10Controller;
   late final TextEditingController _notesController;
+  String? _selectedGender;
 
   @override
   void initState() {
@@ -38,6 +39,7 @@ class _EditPlannerCaseDialogState extends ConsumerState<EditPlannerCaseDialog> {
     _medicalAidController = TextEditingController(text: c.medicalAid ?? '');
     _icd10Controller = TextEditingController(text: c.icd10Codes.join(', '));
     _notesController = TextEditingController(text: c.notes ?? '');
+    _selectedGender = c.patientGender;
   }
 
   @override
@@ -83,6 +85,25 @@ class _EditPlannerCaseDialogState extends ConsumerState<EditPlannerCaseDialog> {
                         labelText: 'Age',
                         border: OutlineInputBorder(),
                       ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: 100,
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedGender,
+                      decoration: const InputDecoration(
+                        labelText: 'Gender',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: null, child: Text('-')),
+                        DropdownMenuItem(value: 'M', child: Text('M')),
+                        DropdownMenuItem(value: 'F', child: Text('F')),
+                      ],
+                      onChanged: (value) {
+                        setState(() => _selectedGender = value);
+                      },
                     ),
                   ),
                 ],
@@ -181,6 +202,7 @@ class _EditPlannerCaseDialogState extends ConsumerState<EditPlannerCaseDialog> {
       patientAge: _patientAgeController.text.isEmpty
           ? null
           : _patientAgeController.text,
+      patientGender: _selectedGender,
       operation: _operationController.text.isEmpty
           ? null
           : _operationController.text,

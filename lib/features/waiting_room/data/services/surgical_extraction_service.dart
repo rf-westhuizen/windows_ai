@@ -29,6 +29,7 @@ CASES (extract each patient case separately):
 For each patient/case found, extract:
 - patientName: Patient's full name
 - patientAge: Age or birth year (as string, e.g., "45" or "1978")
+- patientGender: Patient's gender ("M" for male, "F" for female, null if unknown)
 - operation: The procedure/operation to be performed
 - startTime: Scheduled time for this specific case
 - durationMinutes: Expected duration in minutes (numeric)
@@ -46,6 +47,7 @@ Return your response as JSON with this exact structure:
     {
       "patientName": "John Doe",
       "patientAge": "45",
+      "patientGender": "M",
       "operation": "Appendectomy",
       "startTime": "08:00",
       "durationMinutes": 45,
@@ -249,6 +251,7 @@ class ExtractedCase {
   ExtractedCase({
     this.patientName,
     this.patientAge,
+    this.patientGender,
     this.operation,
     this.startTime,
     this.durationMinutes,
@@ -260,6 +263,7 @@ class ExtractedCase {
 
   final String? patientName;
   final String? patientAge;
+  final String? patientGender;
   final String? operation;
   final String? startTime;
   final int? durationMinutes;
@@ -272,6 +276,7 @@ class ExtractedCase {
     return ExtractedCase(
       patientName: json['patientName'] as String?,
       patientAge: json['patientAge']?.toString(),
+      patientGender: json['patientGender'] as String?,
       operation: json['operation'] as String?,
       startTime: json['startTime'] as String?,
       durationMinutes: json['durationMinutes'] as int?,

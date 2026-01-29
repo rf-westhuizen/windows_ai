@@ -224,6 +224,13 @@ class _SurgicalCaseTileState extends ConsumerState<SurgicalCaseTile> {
                 Icons.cake_outlined,
                 'Age: ${widget.surgicalCase.patientAge}',
               ),
+            if (widget.surgicalCase.patientGender != null)
+              _buildInfoChip(
+                widget.surgicalCase.patientGender == 'M'
+                    ? Icons.male
+                    : Icons.female,
+                widget.surgicalCase.patientGender!,
+              ),
             if (widget.surgicalCase.startTime != null)
               _buildInfoChip(
                 Icons.access_time,

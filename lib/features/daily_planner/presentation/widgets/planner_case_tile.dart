@@ -75,6 +75,13 @@ class PlannerCaseTile extends ConsumerWidget {
                           Icons.timer_outlined, '${plannerCase.durationMinutes} min'),
                     if (plannerCase.patientAge != null)
                       _buildChip(Icons.cake_outlined, plannerCase.patientAge!),
+                    if (plannerCase.patientGender != null)
+                      _buildChip(
+                        plannerCase.patientGender == 'M'
+                            ? Icons.male
+                            : Icons.female,
+                        plannerCase.patientGender!,
+                      ),
                   ],
                 ),
               ],

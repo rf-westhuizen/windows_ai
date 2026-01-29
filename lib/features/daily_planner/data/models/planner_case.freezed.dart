@@ -33,6 +33,9 @@ mixin _$PlannerCase {
   /// Patient's age or birth year
   String? get patientAge => throw _privateConstructorUsedError;
 
+  /// Patient's gender (M/F)
+  String? get patientGender => throw _privateConstructorUsedError;
+
   /// Operation/procedure to be performed
   String? get operation => throw _privateConstructorUsedError;
 
@@ -79,6 +82,7 @@ abstract class $PlannerCaseCopyWith<$Res> {
     String surgeonGroupId,
     String? patientName,
     String? patientAge,
+    String? patientGender,
     String? operation,
     String? startTime,
     int? durationMinutes,
@@ -109,6 +113,7 @@ class _$PlannerCaseCopyWithImpl<$Res, $Val extends PlannerCase>
     Object? surgeonGroupId = null,
     Object? patientName = freezed,
     Object? patientAge = freezed,
+    Object? patientGender = freezed,
     Object? operation = freezed,
     Object? startTime = freezed,
     Object? durationMinutes = freezed,
@@ -135,6 +140,10 @@ class _$PlannerCaseCopyWithImpl<$Res, $Val extends PlannerCase>
             patientAge: freezed == patientAge
                 ? _value.patientAge
                 : patientAge // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            patientGender: freezed == patientGender
+                ? _value.patientGender
+                : patientGender // ignore: cast_nullable_to_non_nullable
                       as String?,
             operation: freezed == operation
                 ? _value.operation
@@ -188,6 +197,7 @@ abstract class _$$PlannerCaseImplCopyWith<$Res>
     String surgeonGroupId,
     String? patientName,
     String? patientAge,
+    String? patientGender,
     String? operation,
     String? startTime,
     int? durationMinutes,
@@ -217,6 +227,7 @@ class __$$PlannerCaseImplCopyWithImpl<$Res>
     Object? surgeonGroupId = null,
     Object? patientName = freezed,
     Object? patientAge = freezed,
+    Object? patientGender = freezed,
     Object? operation = freezed,
     Object? startTime = freezed,
     Object? durationMinutes = freezed,
@@ -243,6 +254,10 @@ class __$$PlannerCaseImplCopyWithImpl<$Res>
         patientAge: freezed == patientAge
             ? _value.patientAge
             : patientAge // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        patientGender: freezed == patientGender
+            ? _value.patientGender
+            : patientGender // ignore: cast_nullable_to_non_nullable
                   as String?,
         operation: freezed == operation
             ? _value.operation
@@ -289,6 +304,7 @@ class _$PlannerCaseImpl implements _PlannerCase {
     required this.surgeonGroupId,
     this.patientName,
     this.patientAge,
+    this.patientGender,
     this.operation,
     this.startTime,
     this.durationMinutes,
@@ -317,6 +333,10 @@ class _$PlannerCaseImpl implements _PlannerCase {
   /// Patient's age or birth year
   @override
   final String? patientAge;
+
+  /// Patient's gender (M/F)
+  @override
+  final String? patientGender;
 
   /// Operation/procedure to be performed
   @override
@@ -361,7 +381,7 @@ class _$PlannerCaseImpl implements _PlannerCase {
 
   @override
   String toString() {
-    return 'PlannerCase(id: $id, surgeonGroupId: $surgeonGroupId, patientName: $patientName, patientAge: $patientAge, operation: $operation, startTime: $startTime, durationMinutes: $durationMinutes, medicalAid: $medicalAid, icd10Codes: $icd10Codes, hospital: $hospital, notes: $notes, orderIndex: $orderIndex)';
+    return 'PlannerCase(id: $id, surgeonGroupId: $surgeonGroupId, patientName: $patientName, patientAge: $patientAge, patientGender: $patientGender, operation: $operation, startTime: $startTime, durationMinutes: $durationMinutes, medicalAid: $medicalAid, icd10Codes: $icd10Codes, hospital: $hospital, notes: $notes, orderIndex: $orderIndex)';
   }
 
   @override
@@ -376,6 +396,8 @@ class _$PlannerCaseImpl implements _PlannerCase {
                 other.patientName == patientName) &&
             (identical(other.patientAge, patientAge) ||
                 other.patientAge == patientAge) &&
+            (identical(other.patientGender, patientGender) ||
+                other.patientGender == patientGender) &&
             (identical(other.operation, operation) ||
                 other.operation == operation) &&
             (identical(other.startTime, startTime) ||
@@ -403,6 +425,7 @@ class _$PlannerCaseImpl implements _PlannerCase {
     surgeonGroupId,
     patientName,
     patientAge,
+    patientGender,
     operation,
     startTime,
     durationMinutes,
@@ -433,6 +456,7 @@ abstract class _PlannerCase implements PlannerCase {
     required final String surgeonGroupId,
     final String? patientName,
     final String? patientAge,
+    final String? patientGender,
     final String? operation,
     final String? startTime,
     final int? durationMinutes,
@@ -461,6 +485,10 @@ abstract class _PlannerCase implements PlannerCase {
   /// Patient's age or birth year
   @override
   String? get patientAge;
+
+  /// Patient's gender (M/F)
+  @override
+  String? get patientGender;
 
   /// Operation/procedure to be performed
   @override

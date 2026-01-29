@@ -228,6 +228,7 @@ class _ExportToPlannnerDialogState
         surgeonGroupId: groupId,
         patientName: c.patientName,
         patientAge: c.patientAge,
+        patientGender: c.patientGender,
         operation: c.operation,
         startTime: c.startTime,
         durationMinutes: c.durationMinutes,

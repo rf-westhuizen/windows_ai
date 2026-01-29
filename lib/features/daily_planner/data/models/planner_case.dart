@@ -19,6 +19,9 @@ class PlannerCase with _$PlannerCase {
     /// Patient's age or birth year
     String? patientAge,
 
+    /// Patient's gender (M/F)
+    String? patientGender,
+
     /// Operation/procedure to be performed
     String? operation,
 

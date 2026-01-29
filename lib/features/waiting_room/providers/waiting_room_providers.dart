@@ -141,6 +141,7 @@ class WaitingRoomNotifier extends Notifier<WaitingRoomState> {
           originalGroupId: groupId,
           patientName: extracted.patientName,
           patientAge: extracted.patientAge,
+          patientGender: extracted.patientGender,
           operation: extracted.operation,
           startTime: extracted.startTime,
           durationMinutes: extracted.durationMinutes,
