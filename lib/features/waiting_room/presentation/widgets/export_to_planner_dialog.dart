@@ -243,8 +243,11 @@ class _ExportToPlannnerDialogState
           anaesthesiologistId,
         );
 
-    // Navigate to planner
-    ref.read(navigateToPlannerProvider.notifier).state = true;
+    // Only navigate to planner if all groups have been exported
+    final remainingGroups = ref.read(waitingRoomProvider).activeGroups;
+    if (remainingGroups.isEmpty) {
+      ref.read(navigateToPlannerProvider.notifier).state = true;
+    }
 
     Navigator.of(context).pop();
 
