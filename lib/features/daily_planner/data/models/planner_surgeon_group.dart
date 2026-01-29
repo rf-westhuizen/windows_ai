@@ -31,6 +31,9 @@ class PlannerSurgeonGroup with _$PlannerSurgeonGroup {
 
     /// Order index for sorting
     @Default(0) int orderIndex,
+
+    /// Original Waiting Room group ID (for returning cases back)
+    String? waitingRoomGroupId,
   }) = _PlannerSurgeonGroup;
 
   factory PlannerSurgeonGroup.fromJson(Map<String, dynamic> json) =>

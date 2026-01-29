@@ -17,6 +17,7 @@ _$PlannerSurgeonGroupImpl _$$PlannerSurgeonGroupImplFromJson(
   sourceFileName: json['sourceFileName'] as String?,
   exportedAt: DateTime.parse(json['exportedAt'] as String),
   orderIndex: (json['orderIndex'] as num?)?.toInt() ?? 0,
+  waitingRoomGroupId: json['waitingRoomGroupId'] as String?,
 );
 
 Map<String, dynamic> _$$PlannerSurgeonGroupImplToJson(
@@ -30,4 +31,5 @@ Map<String, dynamic> _$$PlannerSurgeonGroupImplToJson(
   'sourceFileName': instance.sourceFileName,
   'exportedAt': instance.exportedAt.toIso8601String(),
   'orderIndex': instance.orderIndex,
+  'waitingRoomGroupId': instance.waitingRoomGroupId,
 };

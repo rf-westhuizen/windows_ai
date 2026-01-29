@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../waiting_room/providers/waiting_room_providers.dart';
 import '../../data/models/models.dart';
 import '../../providers/daily_planner_providers.dart';
 import 'edit_planner_group_dialog.dart';
@@ -112,6 +113,14 @@ class PlannerSurgeonGroupTile extends ConsumerWidget {
           ),
 
           // Actions
+          if (surgeonGroup.waitingRoomGroupId != null)
+            IconButton(
+              icon: const Icon(Icons.undo, size: 18),
+              tooltip: 'Return to Waiting Room',
+              onPressed: () => _confirmReturnToWaitingRoom(context, ref),
+              color: Colors.grey[600],
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            ),
           IconButton(
             icon: const Icon(Icons.sort, size: 18),
             tooltip: 'Sort by time',
@@ -171,6 +180,59 @@ class PlannerSurgeonGroupTile extends ConsumerWidget {
 
     if (confirmed == true) {
       ref.read(dailyPlannerProvider.notifier).deleteSurgeonGroup(surgeonGroup.id);
+    }
+  }
+
+  Future<void> _confirmReturnToWaitingRoom(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Return to Waiting Room'),
+        content: Text(
+          'Move "${surgeonGroup.surgeonName ?? 'this group'}" back to the Waiting Room for editing?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black87,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Return'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && surgeonGroup.waitingRoomGroupId != null) {
+      // Unmark the group in waiting room
+      ref
+          .read(waitingRoomProvider.notifier)
+          .unmarkAsExported(surgeonGroup.waitingRoomGroupId!);
+
+      // Delete from daily planner
+      ref
+          .read(dailyPlannerProvider.notifier)
+          .deleteSurgeonGroup(surgeonGroup.id);
+
+      // Show confirmation
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${surgeonGroup.surgeonName ?? 'Group'} returned to Waiting Room',
+            ),
+            backgroundColor: Colors.green[700],
+          ),
+        );
+      }
     }
   }
 }

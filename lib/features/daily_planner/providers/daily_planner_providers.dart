@@ -115,6 +115,7 @@ class DailyPlannerNotifier extends Notifier<DailyPlannerState> {
     String? hospital,
     String? startTime,
     String? sourceFileName,
+    String? waitingRoomGroupId,
   }) {
     final id = _uuid.v4();
     final existingGroups = state.surgeonGroupsFor(anaesthesiologistId);
@@ -128,6 +129,7 @@ class DailyPlannerNotifier extends Notifier<DailyPlannerState> {
       sourceFileName: sourceFileName,
       exportedAt: DateTime.now(),
       orderIndex: existingGroups.length,
+      waitingRoomGroupId: waitingRoomGroupId,
     );
 
     state = state.copyWith(

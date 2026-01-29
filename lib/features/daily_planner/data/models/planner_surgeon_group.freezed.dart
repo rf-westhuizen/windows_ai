@@ -45,6 +45,9 @@ mixin _$PlannerSurgeonGroup {
   /// Order index for sorting
   int get orderIndex => throw _privateConstructorUsedError;
 
+  /// Original Waiting Room group ID (for returning cases back)
+  String? get waitingRoomGroupId => throw _privateConstructorUsedError;
+
   /// Serializes this PlannerSurgeonGroup to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
@@ -71,6 +74,7 @@ abstract class $PlannerSurgeonGroupCopyWith<$Res> {
     String? sourceFileName,
     DateTime exportedAt,
     int orderIndex,
+    String? waitingRoomGroupId,
   });
 }
 
@@ -97,6 +101,7 @@ class _$PlannerSurgeonGroupCopyWithImpl<$Res, $Val extends PlannerSurgeonGroup>
     Object? sourceFileName = freezed,
     Object? exportedAt = null,
     Object? orderIndex = null,
+    Object? waitingRoomGroupId = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -132,6 +137,10 @@ class _$PlannerSurgeonGroupCopyWithImpl<$Res, $Val extends PlannerSurgeonGroup>
                 ? _value.orderIndex
                 : orderIndex // ignore: cast_nullable_to_non_nullable
                       as int,
+            waitingRoomGroupId: freezed == waitingRoomGroupId
+                ? _value.waitingRoomGroupId
+                : waitingRoomGroupId // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -156,6 +165,7 @@ abstract class _$$PlannerSurgeonGroupImplCopyWith<$Res>
     String? sourceFileName,
     DateTime exportedAt,
     int orderIndex,
+    String? waitingRoomGroupId,
   });
 }
 
@@ -181,6 +191,7 @@ class __$$PlannerSurgeonGroupImplCopyWithImpl<$Res>
     Object? sourceFileName = freezed,
     Object? exportedAt = null,
     Object? orderIndex = null,
+    Object? waitingRoomGroupId = freezed,
   }) {
     return _then(
       _$PlannerSurgeonGroupImpl(
@@ -216,6 +227,10 @@ class __$$PlannerSurgeonGroupImplCopyWithImpl<$Res>
             ? _value.orderIndex
             : orderIndex // ignore: cast_nullable_to_non_nullable
                   as int,
+        waitingRoomGroupId: freezed == waitingRoomGroupId
+            ? _value.waitingRoomGroupId
+            : waitingRoomGroupId // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -233,6 +248,7 @@ class _$PlannerSurgeonGroupImpl implements _PlannerSurgeonGroup {
     this.sourceFileName,
     required this.exportedAt,
     this.orderIndex = 0,
+    this.waitingRoomGroupId,
   });
 
   factory _$PlannerSurgeonGroupImpl.fromJson(Map<String, dynamic> json) =>
@@ -271,9 +287,13 @@ class _$PlannerSurgeonGroupImpl implements _PlannerSurgeonGroup {
   @JsonKey()
   final int orderIndex;
 
+  /// Original Waiting Room group ID (for returning cases back)
+  @override
+  final String? waitingRoomGroupId;
+
   @override
   String toString() {
-    return 'PlannerSurgeonGroup(id: $id, anaesthesiologistId: $anaesthesiologistId, surgeonName: $surgeonName, hospital: $hospital, startTime: $startTime, sourceFileName: $sourceFileName, exportedAt: $exportedAt, orderIndex: $orderIndex)';
+    return 'PlannerSurgeonGroup(id: $id, anaesthesiologistId: $anaesthesiologistId, surgeonName: $surgeonName, hospital: $hospital, startTime: $startTime, sourceFileName: $sourceFileName, exportedAt: $exportedAt, orderIndex: $orderIndex, waitingRoomGroupId: $waitingRoomGroupId)';
   }
 
   @override
@@ -295,7 +315,9 @@ class _$PlannerSurgeonGroupImpl implements _PlannerSurgeonGroup {
             (identical(other.exportedAt, exportedAt) ||
                 other.exportedAt == exportedAt) &&
             (identical(other.orderIndex, orderIndex) ||
-                other.orderIndex == orderIndex));
+                other.orderIndex == orderIndex) &&
+            (identical(other.waitingRoomGroupId, waitingRoomGroupId) ||
+                other.waitingRoomGroupId == waitingRoomGroupId));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -310,6 +332,7 @@ class _$PlannerSurgeonGroupImpl implements _PlannerSurgeonGroup {
     sourceFileName,
     exportedAt,
     orderIndex,
+    waitingRoomGroupId,
   );
 
   /// Create a copy of PlannerSurgeonGroup
@@ -339,6 +362,7 @@ abstract class _PlannerSurgeonGroup implements PlannerSurgeonGroup {
     final String? sourceFileName,
     required final DateTime exportedAt,
     final int orderIndex,
+    final String? waitingRoomGroupId,
   }) = _$PlannerSurgeonGroupImpl;
 
   factory _PlannerSurgeonGroup.fromJson(Map<String, dynamic> json) =
@@ -375,6 +399,10 @@ abstract class _PlannerSurgeonGroup implements PlannerSurgeonGroup {
   /// Order index for sorting
   @override
   int get orderIndex;
+
+  /// Original Waiting Room group ID (for returning cases back)
+  @override
+  String? get waitingRoomGroupId;
 
   /// Create a copy of PlannerSurgeonGroup
   /// with the given fields replaced by the non-null parameter values.

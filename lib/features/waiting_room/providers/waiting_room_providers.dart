@@ -332,6 +332,22 @@ class WaitingRoomNotifier extends Notifier<WaitingRoomState> {
     print('🟢 [WaitingRoom] Marked group $groupId as exported');
   }
 
+  /// Unmark a group as exported (return from Daily Planner).
+  void unmarkAsExported(String groupId) {
+    state = state.copyWith(
+      groups: state.groups.map((g) {
+        if (g.id == groupId) {
+          return g.copyWith(
+            isExported: false,
+            exportedToAnaesthesiologistId: null,
+          );
+        }
+        return g;
+      }).toList(),
+    );
+    print('🟢 [WaitingRoom] Unmarked group $groupId as exported');
+  }
+
   /// Sort all cases within a group by start time (earliest first).
   void sortGroupByTime(String groupId) {
     final groupCases = state.cases.where((c) => c.groupId == groupId).toList();

@@ -219,6 +219,7 @@ class _ExportToPlannnerDialogState
       hospital: widget.group.hospital,
       startTime: widget.group.startTime,
       sourceFileName: widget.group.sourceFileName,
+      waitingRoomGroupId: widget.group.id,
     );
 
     // Add all cases
