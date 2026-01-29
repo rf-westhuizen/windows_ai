@@ -20,6 +20,7 @@ class _EditPlannerGroupDialogState
   late final TextEditingController _surgeonController;
   late final TextEditingController _hospitalController;
   late final TextEditingController _startTimeController;
+  late String _selectedAnaesthesiologistId;
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _EditPlannerGroupDialogState
         TextEditingController(text: widget.surgeonGroup.hospital ?? '');
     _startTimeController =
         TextEditingController(text: widget.surgeonGroup.startTime ?? '');
+    _selectedAnaesthesiologistId = widget.surgeonGroup.anaesthesiologistId;
   }
 
   @override
@@ -42,6 +44,9 @@ class _EditPlannerGroupDialogState
 
   @override
   Widget build(BuildContext context) {
+    final plannerState = ref.watch(dailyPlannerProvider);
+    final allAnaesthesiologists = plannerState.anaesthesiologists;
+
     return AlertDialog(
       title: const Text('Edit Surgeon Group'),
       content: SizedBox(
@@ -49,6 +54,56 @@ class _EditPlannerGroupDialogState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Anaesthesiologist dropdown
+            DropdownButtonFormField<String>(
+              value: _selectedAnaesthesiologistId,
+              decoration: const InputDecoration(
+                labelText: 'Assigned to Anaesthesiologist',
+                border: OutlineInputBorder(),
+              ),
+              items: allAnaesthesiologists.map((a) {
+                return DropdownMenuItem(
+                  value: a.id,
+                  child: Row(
+                    children: [
+                      Icon(
+                        a.isHelper ? Icons.person_outline : Icons.person,
+                        size: 18,
+                        color: Colors.grey[600],
+                      ),
+                      const SizedBox(width: 8),
+                      Text(a.name),
+                      if (a.isHelper) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'Helper',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() => _selectedAnaesthesiologistId = value);
+                }
+              },
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _surgeonController,
               decoration: const InputDecoration(
@@ -95,6 +150,7 @@ class _EditPlannerGroupDialogState
 
   void _save() {
     final updated = widget.surgeonGroup.copyWith(
+      anaesthesiologistId: _selectedAnaesthesiologistId,
       surgeonName: _surgeonController.text.isEmpty
           ? null
           : _surgeonController.text,

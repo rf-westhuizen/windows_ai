@@ -155,6 +155,7 @@ class _ExportToPlannnerDialogState
                   hintText: 'e.g., Dr. Smith',
                 ),
                 autofocus: true,
+                onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 12),
               CheckboxListTile(

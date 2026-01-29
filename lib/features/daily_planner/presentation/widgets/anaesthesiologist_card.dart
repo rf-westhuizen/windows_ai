@@ -7,7 +7,7 @@ import 'edit_anaesthesiologist_dialog.dart';
 import 'planner_surgeon_group_tile.dart';
 
 /// Card displaying an anaesthesiologist with their surgeon groups.
-class AnaesthesiologistCard extends ConsumerWidget {
+class AnaesthesiologistCard extends ConsumerStatefulWidget {
   const AnaesthesiologistCard({
     super.key,
     required this.anaesthesiologist,
@@ -16,9 +16,17 @@ class AnaesthesiologistCard extends ConsumerWidget {
   final Anaesthesiologist anaesthesiologist;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AnaesthesiologistCard> createState() =>
+      _AnaesthesiologistCardState();
+}
+
+class _AnaesthesiologistCardState extends ConsumerState<AnaesthesiologistCard> {
+  bool _isCollapsed = false;
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(dailyPlannerProvider);
-    final surgeonGroups = state.surgeonGroupsFor(anaesthesiologist.id);
+    final surgeonGroups = state.surgeonGroupsFor(widget.anaesthesiologist.id);
 
     return Container(
       decoration: BoxDecoration(
@@ -37,59 +45,75 @@ class AnaesthesiologistCard extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header
-          _buildHeader(context, ref),
+          _buildHeader(context, surgeonGroups.length),
 
-          Divider(height: 1, color: Colors.grey[200]),
+          // Content (collapsible)
+          if (!_isCollapsed) ...[
+            Divider(height: 1, color: Colors.grey[200]),
 
-          // Surgeon groups
-          if (surgeonGroups.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Center(
-                child: Text(
-                  'No surgeons assigned',
-                  style: TextStyle(color: Colors.grey[500]),
+            // Surgeon groups
+            if (surgeonGroups.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: Text(
+                    'No surgeons assigned',
+                    style: TextStyle(color: Colors.grey[500]),
+                  ),
                 ),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: surgeonGroups.length,
+                separatorBuilder: (_, __) =>
+                    Divider(height: 1, color: Colors.grey[100]),
+                itemBuilder: (context, index) {
+                  return PlannerSurgeonGroupTile(
+                    surgeonGroup: surgeonGroups[index],
+                  );
+                },
               ),
-            )
-          else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: surgeonGroups.length,
-              separatorBuilder: (_, __) =>
-                  Divider(height: 1, color: Colors.grey[100]),
-              itemBuilder: (context, index) {
-                return PlannerSurgeonGroupTile(
-                  surgeonGroup: surgeonGroups[index],
-                );
-              },
-            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+  Widget _buildHeader(BuildContext context, int caseCount) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
+          // Minimize/Expand button
+          IconButton(
+            icon: AnimatedRotation(
+              turns: _isCollapsed ? 0 : 0.5,
+              duration: const Duration(milliseconds: 200),
+              child: const Icon(Icons.expand_more, size: 24),
+            ),
+            tooltip: _isCollapsed ? 'Expand' : 'Minimize',
+            onPressed: () => setState(() => _isCollapsed = !_isCollapsed),
+            color: Colors.grey[600],
+          ),
+          const SizedBox(width: 4),
+
           // Icon
           Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: anaesthesiologist.isHelper
+              color: widget.anaesthesiologist.isHelper
                   ? Colors.grey[200]
                   : Colors.black87,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
-              anaesthesiologist.isHelper
+              widget.anaesthesiologist.isHelper
                   ? Icons.person_outline
                   : Icons.person,
-              color: anaesthesiologist.isHelper
+              color: widget.anaesthesiologist.isHelper
                   ? Colors.grey[700]
                   : Colors.white,
               size: 20,
@@ -97,27 +121,47 @@ class AnaesthesiologistCard extends ConsumerWidget {
           ),
           const SizedBox(width: 12),
 
-          // Name
+          // Name and case count
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  anaesthesiologist.name,
+                  widget.anaesthesiologist.name,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
                 ),
-                if (anaesthesiologist.isHelper)
-                  Text(
-                    'Helper',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey[500],
-                    ),
-                  ),
+                Row(
+                  children: [
+                    if (widget.anaesthesiologist.isHelper)
+                      Text(
+                        'Helper',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    if (widget.anaesthesiologist.isHelper && _isCollapsed)
+                      Text(
+                        ' • ',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    if (_isCollapsed)
+                      Text(
+                        '$caseCount surgeon${caseCount == 1 ? '' : 's'}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -132,7 +176,7 @@ class AnaesthesiologistCard extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.delete_outline, size: 20),
             tooltip: 'Delete',
-            onPressed: () => _confirmDelete(context, ref),
+            onPressed: () => _confirmDelete(context),
             color: Colors.grey[600],
           ),
         ],
@@ -144,18 +188,18 @@ class AnaesthesiologistCard extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => EditAnaesthesiologistDialog(
-        anaesthesiologist: anaesthesiologist,
+        anaesthesiologist: widget.anaesthesiologist,
       ),
     );
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmDelete(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Anaesthesiologist'),
         content: Text(
-          'Delete "${anaesthesiologist.name}" and all their assigned cases?',
+          'Delete "${widget.anaesthesiologist.name}" and all their assigned cases?',
         ),
         actions: [
           TextButton(
@@ -174,7 +218,7 @@ class AnaesthesiologistCard extends ConsumerWidget {
     if (confirmed == true) {
       ref
           .read(dailyPlannerProvider.notifier)
-          .deleteAnaesthesiologist(anaesthesiologist.id);
+          .deleteAnaesthesiologist(widget.anaesthesiologist.id);
     }
   }
 }
