@@ -35,15 +35,17 @@ class AnaesthesiologistColumn extends ConsumerWidget {
                 color: Colors.grey[700],
               ),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
               TextButton.icon(
                 onPressed: onAdd,
                 icon: const Icon(Icons.add, size: 18),
