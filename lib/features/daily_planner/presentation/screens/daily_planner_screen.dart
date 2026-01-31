@@ -1,11 +1,9 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/daily_planner_providers.dart';
 import '../widgets/anaesthesiologist_column.dart';
 import '../widgets/add_anaesthesiologist_dialog.dart';
-import '../widgets/anaesthesiologist_card.dart';
 
 /// Main screen for the Daily Planner.
 class DailyPlannerScreen extends ConsumerStatefulWidget {
@@ -19,13 +17,6 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
   bool _showMain = true;
   bool _showHelpers = true;
   bool _horizontalLayout = false;
-  final ScrollController _horizontalScrollController = ScrollController();
-
-  @override
-  void dispose() {
-    _horizontalScrollController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +155,7 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
                     ),
                     const SizedBox(height: 8),
                     RotatedBox(
-                      quarterTurns: 1,
+                      quarterTurns: 3,
                       child: Text(
                         'Main${state.mainAnaesthesiologists.isNotEmpty ? ' (${state.mainAnaesthesiologists.length})' : ''}',
                         style: TextStyle(
@@ -189,9 +180,14 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
         if (_showMain)
           Expanded(
             flex: _showHelpers ? 2 : 1, // Take more space when helpers visible
-            child: _horizontalLayout
-                ? _buildHorizontalLayout(context, state)
-                : _buildVerticalLayout(context, state),
+            child: AnaesthesiologistColumn(
+              title: 'Anaesthesiologists',
+              anaesthesiologists: state.mainAnaesthesiologists,
+              isHelper: false,
+              onAdd: () => _showAddDialog(context, isHelper: false),
+              onMinimize: () => setState(() => _showMain = false),
+              horizontalLayout: _horizontalLayout,
+            ),
           ),
 
         // Animated Helper section
@@ -209,6 +205,7 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
                     isHelper: true,
                     onAdd: () => _showAddDialog(context, isHelper: true),
                     onMinimize: () => setState(() => _showHelpers = false),
+                    horizontalLayout: _horizontalLayout,
                   ),
                 )
               : Expanded(
@@ -218,6 +215,7 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
                     isHelper: true,
                     onAdd: () => _showAddDialog(context, isHelper: true),
                     onMinimize: () => setState(() => _showHelpers = false),
+                    horizontalLayout: _horizontalLayout,
                   ),
                 ),
         ],
@@ -260,118 +258,6 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
               ),
             ),
           ),
-      ],
-    );
-  }
-
-  /// Vertical layout - cards stacked under each other (current default)
-  Widget _buildVerticalLayout(BuildContext context, DailyPlannerState state) {
-    return AnaesthesiologistColumn(
-      title: 'Anaesthesiologists',
-      anaesthesiologists: state.mainAnaesthesiologists,
-      isHelper: false,
-      onAdd: () => _showAddDialog(context, isHelper: false),
-      onMinimize: () => setState(() => _showMain = false),
-    );
-  }
-
-  /// Horizontal layout - cards displayed side by side
-  Widget _buildHorizontalLayout(BuildContext context, DailyPlannerState state) {
-    final anaesthesiologists = state.mainAnaesthesiologists;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Header
-        Container(
-          padding: const EdgeInsets.all(16),
-          color: Colors.white,
-          child: Row(
-            children: [
-              Icon(Icons.person, color: Colors.grey[700]),
-              const SizedBox(width: 8),
-              const Text(
-                'Anaesthesiologists',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const Spacer(),
-              TextButton.icon(
-                onPressed: () => _showAddDialog(context, isHelper: false),
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text('Add'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.black87,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.chevron_left, size: 20),
-                tooltip: 'Minimize',
-                onPressed: () => setState(() => _showMain = false),
-                color: Colors.grey[600],
-              ),
-            ],
-          ),
-        ),
-
-        Divider(height: 1, color: Colors.grey[300]),
-
-        // Horizontal scrollable cards
-        Expanded(
-          child: anaesthesiologists.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.person_add,
-                        size: 48,
-                        color: Colors.grey[300],
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'No anaesthesiologists added',
-                        style: TextStyle(color: Colors.grey[500]),
-                      ),
-                    ],
-                  ),
-                )
-              : ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context).copyWith(
-                    dragDevices: {
-                      PointerDeviceKind.mouse,
-                      PointerDeviceKind.touch,
-                      PointerDeviceKind.trackpad,
-                    },
-                  ),
-                  child: Scrollbar(
-                    controller: _horizontalScrollController,
-                    thumbVisibility: true,
-                    child: ListView.builder(
-                      controller: _horizontalScrollController,
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.all(16),
-                      itemCount: anaesthesiologists.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 16),
-                          child: SizedBox(
-                            width: 400,
-                            child: SingleChildScrollView(
-                              child: AnaesthesiologistCard(
-                                anaesthesiologist: anaesthesiologists[index],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-        ),
       ],
     );
   }

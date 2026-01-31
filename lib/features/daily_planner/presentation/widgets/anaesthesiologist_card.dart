@@ -53,7 +53,14 @@ class _AnaesthesiologistCardState extends ConsumerState<AnaesthesiologistCard> {
             Divider(height: 1, color: Colors.grey[200]),
 
             // Gantt timeline (only show if there are cases)
+            // Use a key based on case data to force rebuild when times change
             GanttTimelineWidget(
+              key: ValueKey(
+                state
+                    .allCasesForAnaesthesiologist(widget.anaesthesiologist.id)
+                    .map((c) => '${c.id}:${c.startTime}:${c.durationMinutes}')
+                    .join(','),
+              ),
               anaesthesiologistId: widget.anaesthesiologist.id,
             ),
 

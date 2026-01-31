@@ -8,8 +8,8 @@ class GanttTimelineWidget extends ConsumerWidget {
   const GanttTimelineWidget({
     super.key,
     required this.anaesthesiologistId,
-    this.startHour = 6,
-    this.endHour = 20,
+    this.startHour = 7,
+    this.endHour = 23,
   });
 
   final String anaesthesiologistId;

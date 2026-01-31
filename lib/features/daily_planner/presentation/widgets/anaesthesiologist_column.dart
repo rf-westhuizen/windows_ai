@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -5,7 +6,7 @@ import '../../data/models/models.dart';
 import 'anaesthesiologist_card.dart';
 
 /// Column displaying a list of anaesthesiologists.
-class AnaesthesiologistColumn extends ConsumerWidget {
+class AnaesthesiologistColumn extends ConsumerStatefulWidget {
   const AnaesthesiologistColumn({
     super.key,
     required this.title,
@@ -13,6 +14,7 @@ class AnaesthesiologistColumn extends ConsumerWidget {
     required this.isHelper,
     required this.onAdd,
     this.onMinimize,
+    this.horizontalLayout = false,
   });
 
   final String title;
@@ -20,9 +22,25 @@ class AnaesthesiologistColumn extends ConsumerWidget {
   final bool isHelper;
   final VoidCallback onAdd;
   final VoidCallback? onMinimize;
+  final bool horizontalLayout;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AnaesthesiologistColumn> createState() =>
+      _AnaesthesiologistColumnState();
+}
+
+class _AnaesthesiologistColumnState
+    extends ConsumerState<AnaesthesiologistColumn> {
+  final ScrollController _horizontalScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -33,13 +51,13 @@ class AnaesthesiologistColumn extends ConsumerWidget {
           child: Row(
             children: [
               Icon(
-                isHelper ? Icons.person_outline : Icons.person,
+                widget.isHelper ? Icons.person_outline : Icons.person,
                 color: Colors.grey[700],
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  title,
+                  widget.title,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -49,21 +67,21 @@ class AnaesthesiologistColumn extends ConsumerWidget {
                 ),
               ),
               TextButton.icon(
-                onPressed: onAdd,
+                onPressed: widget.onAdd,
                 icon: const Icon(Icons.add, size: 18),
                 label: const Text('Add'),
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.black87,
                 ),
               ),
-              if (onMinimize != null)
+              if (widget.onMinimize != null)
                 IconButton(
                   icon: Icon(
-                    isHelper ? Icons.chevron_right : Icons.chevron_left,
+                    widget.isHelper ? Icons.chevron_right : Icons.chevron_left,
                     size: 20,
                   ),
                   tooltip: 'Minimize',
-                  onPressed: onMinimize,
+                  onPressed: widget.onMinimize,
                   color: Colors.grey[600],
                 ),
             ],
@@ -74,22 +92,63 @@ class AnaesthesiologistColumn extends ConsumerWidget {
 
         // List of anaesthesiologists
         Expanded(
-          child: anaesthesiologists.isEmpty
+          child: widget.anaesthesiologists.isEmpty
               ? _buildEmptyState()
-              : ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: anaesthesiologists.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: AnaesthesiologistCard(
-                        anaesthesiologist: anaesthesiologists[index],
-                      ),
-                    );
-                  },
-                ),
+              : widget.horizontalLayout
+                  ? _buildHorizontalList()
+                  : _buildVerticalList(),
         ),
       ],
+    );
+  }
+
+  Widget _buildVerticalList() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: widget.anaesthesiologists.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: AnaesthesiologistCard(
+            anaesthesiologist: widget.anaesthesiologists[index],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHorizontalList() {
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.touch,
+          PointerDeviceKind.trackpad,
+        },
+      ),
+      child: Scrollbar(
+        controller: _horizontalScrollController,
+        thumbVisibility: true,
+        child: ListView.builder(
+          controller: _horizontalScrollController,
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.all(16),
+          itemCount: widget.anaesthesiologists.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: SizedBox(
+                width: 380,
+                child: SingleChildScrollView(
+                  child: AnaesthesiologistCard(
+                    anaesthesiologist: widget.anaesthesiologists[index],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -99,13 +158,13 @@ class AnaesthesiologistColumn extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isHelper ? Icons.person_add_outlined : Icons.person_add,
+            widget.isHelper ? Icons.person_add_outlined : Icons.person_add,
             size: 48,
             color: Colors.grey[300],
           ),
           const SizedBox(height: 12),
           Text(
-            isHelper ? 'No helpers added' : 'No anaesthesiologists added',
+            widget.isHelper ? 'No helpers added' : 'No anaesthesiologists added',
             style: TextStyle(color: Colors.grey[500]),
           ),
         ],

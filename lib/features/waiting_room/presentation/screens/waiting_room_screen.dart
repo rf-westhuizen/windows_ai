@@ -33,6 +33,33 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         actions: [
+          InkWell(
+            onTap: () => setState(() => _showDefaultsInfo = !_showDefaultsInfo),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: Colors.amber[800]),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Default Values Information',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.amber[900],
+                    ),
+                  ),
+                  Icon(
+                    _showDefaultsInfo
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: Colors.amber[800],
+                  ),
+                ],
+              ),
+            ),
+          ),
           if (state.groups.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep_outlined),
@@ -218,37 +245,6 @@ class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
       ),
       child: Column(
         children: [
-          // Header (always visible)
-          InkWell(
-            onTap: () => setState(() => _showDefaultsInfo = !_showDefaultsInfo),
-            borderRadius: BorderRadius.circular(8),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, size: 18, color: Colors.amber[800]),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Default Values Information',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.amber[900],
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    _showDefaultsInfo
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: Colors.amber[800],
-                  ),
-                ],
-              ),
-            ),
-          ),
-
           // Expandable content
           if (_showDefaultsInfo)
             Container(
