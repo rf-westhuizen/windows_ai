@@ -12,12 +12,14 @@ class AnaesthesiologistColumn extends ConsumerWidget {
     required this.anaesthesiologists,
     required this.isHelper,
     required this.onAdd,
+    this.onMinimize,
   });
 
   final String title;
   final List<Anaesthesiologist> anaesthesiologists;
   final bool isHelper;
   final VoidCallback onAdd;
+  final VoidCallback? onMinimize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,6 +56,16 @@ class AnaesthesiologistColumn extends ConsumerWidget {
                   foregroundColor: Colors.black87,
                 ),
               ),
+              if (onMinimize != null)
+                IconButton(
+                  icon: Icon(
+                    isHelper ? Icons.chevron_right : Icons.chevron_left,
+                    size: 20,
+                  ),
+                  tooltip: 'Minimize',
+                  onPressed: onMinimize,
+                  color: Colors.grey[600],
+                ),
             ],
           ),
         ),

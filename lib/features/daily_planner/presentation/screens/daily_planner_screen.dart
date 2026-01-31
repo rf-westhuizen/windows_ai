@@ -16,6 +16,7 @@ class DailyPlannerScreen extends ConsumerStatefulWidget {
 }
 
 class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
+  bool _showMain = true;
   bool _showHelpers = true;
   bool _horizontalLayout = false;
   final ScrollController _horizontalScrollController = ScrollController();
@@ -145,43 +146,83 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Main Anaesthesiologists section
-        Expanded(
-          child: _horizontalLayout
-              ? _buildHorizontalLayout(context, state)
-              : _buildVerticalLayout(context, state),
-        ),
-
-        // Animated Helper section
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          width: _showHelpers ? 400 : 0,
-          clipBehavior: Clip.hardEdge,
-          decoration: const BoxDecoration(),
-          child: _showHelpers
-              ? Row(
+        // Collapsed main indicator (show when hidden)
+        if (!_showMain)
+          GestureDetector(
+            onTap: () => setState(() => _showMain = true),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Container(
+                width: 36,
+                color: Colors.grey[200],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Divider
-                    Container(
-                      width: 1,
-                      color: Colors.grey[300],
+                    Icon(
+                      Icons.chevron_right,
+                      color: Colors.grey[600],
                     ),
-                    // Helper column
-                    Expanded(
-                      child: AnaesthesiologistColumn(
-                        title: 'Helper Anaesthesiologists',
-                        anaesthesiologists: state.helperAnaesthesiologists,
-                        isHelper: true,
-                        onAdd: () => _showAddDialog(context, isHelper: true),
+                    const SizedBox(height: 8),
+                    RotatedBox(
+                      quarterTurns: 1,
+                      child: Text(
+                        'Main${state.mainAnaesthesiologists.isNotEmpty ? ' (${state.mainAnaesthesiologists.length})' : ''}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    Icon(
+                      Icons.chevron_right,
+                      color: Colors.grey[600],
+                    ),
                   ],
-                )
-              : const SizedBox.shrink(),
-        ),
+                ),
+              ),
+            ),
+          ),
 
-        // Collapsed helper indicator (always show when hidden)
+        // Main Anaesthesiologists section
+        if (_showMain)
+          Expanded(
+            flex: _showHelpers ? 2 : 1, // Take more space when helpers visible
+            child: _horizontalLayout
+                ? _buildHorizontalLayout(context, state)
+                : _buildVerticalLayout(context, state),
+          ),
+
+        // Animated Helper section
+        if (_showHelpers) ...[
+          Container(
+            width: 1,
+            color: Colors.grey[300],
+          ),
+          _showMain
+              ? SizedBox(
+                  width: 400,
+                  child: AnaesthesiologistColumn(
+                    title: 'Helper Anaesthesiologists',
+                    anaesthesiologists: state.helperAnaesthesiologists,
+                    isHelper: true,
+                    onAdd: () => _showAddDialog(context, isHelper: true),
+                    onMinimize: () => setState(() => _showHelpers = false),
+                  ),
+                )
+              : Expanded(
+                  child: AnaesthesiologistColumn(
+                    title: 'Helper Anaesthesiologists',
+                    anaesthesiologists: state.helperAnaesthesiologists,
+                    isHelper: true,
+                    onAdd: () => _showAddDialog(context, isHelper: true),
+                    onMinimize: () => setState(() => _showHelpers = false),
+                  ),
+                ),
+        ],
+
+        // Collapsed helper indicator (show when hidden)
         if (!_showHelpers)
           GestureDetector(
             onTap: () => setState(() => _showHelpers = true),
@@ -230,6 +271,7 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
       anaesthesiologists: state.mainAnaesthesiologists,
       isHelper: false,
       onAdd: () => _showAddDialog(context, isHelper: false),
+      onMinimize: () => setState(() => _showMain = false),
     );
   }
 
@@ -264,6 +306,12 @@ class _DailyPlannerScreenState extends ConsumerState<DailyPlannerScreen> {
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.black87,
                 ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.chevron_left, size: 20),
+                tooltip: 'Minimize',
+                onPressed: () => setState(() => _showMain = false),
+                color: Colors.grey[600],
               ),
             ],
           ),

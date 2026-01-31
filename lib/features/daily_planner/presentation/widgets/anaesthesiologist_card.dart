@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/models.dart';
 import '../../providers/daily_planner_providers.dart';
 import 'edit_anaesthesiologist_dialog.dart';
+import 'gantt_timeline_widget.dart';
 import 'planner_surgeon_group_tile.dart';
 
 /// Card displaying an anaesthesiologist with their surgeon groups.
@@ -50,6 +51,11 @@ class _AnaesthesiologistCardState extends ConsumerState<AnaesthesiologistCard> {
           // Content (collapsible)
           if (!_isCollapsed) ...[
             Divider(height: 1, color: Colors.grey[200]),
+
+            // Gantt timeline (only show if there are cases)
+            GanttTimelineWidget(
+              anaesthesiologistId: widget.anaesthesiologist.id,
+            ),
 
             // Surgeon groups
             if (surgeonGroups.isEmpty)
@@ -168,6 +174,12 @@ class _AnaesthesiologistCardState extends ConsumerState<AnaesthesiologistCard> {
 
           // Actions
           IconButton(
+            icon: const Icon(Icons.sort, size: 20),
+            tooltip: 'Sort all cases by time',
+            onPressed: () => _sortAllCasesByTime(),
+            color: Colors.grey[600],
+          ),
+          IconButton(
             icon: const Icon(Icons.edit_outlined, size: 20),
             tooltip: 'Edit name',
             onPressed: () => _showEditDialog(context),
@@ -220,5 +232,11 @@ class _AnaesthesiologistCardState extends ConsumerState<AnaesthesiologistCard> {
           .read(dailyPlannerProvider.notifier)
           .deleteAnaesthesiologist(widget.anaesthesiologist.id);
     }
+  }
+
+  void _sortAllCasesByTime() {
+    ref
+        .read(dailyPlannerProvider.notifier)
+        .sortAllCasesForAnaesthesiologist(widget.anaesthesiologist.id);
   }
 }

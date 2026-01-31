@@ -95,9 +95,12 @@ class PlannerSurgeonGroupTile extends ConsumerWidget {
                     Icon(Icons.local_hospital_outlined,
                         size: 12, color: Colors.grey[500]),
                     const SizedBox(width: 4),
-                    Text(
-                      surgeonGroup.hospital ?? 'Unknown',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    Flexible(
+                      child: Text(
+                        surgeonGroup.hospital ?? 'Unknown',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Icon(Icons.access_time, size: 12, color: Colors.grey[500]),

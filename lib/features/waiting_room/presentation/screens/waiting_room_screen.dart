@@ -8,11 +8,18 @@ import '../widgets/surgeon_group_tile.dart';
 /// Main screen for the Waiting Room feature.
 ///
 /// Displays drag-and-drop zone and surgeon groups with their cases.
-class WaitingRoomScreen extends ConsumerWidget {
+class WaitingRoomScreen extends ConsumerStatefulWidget {
   const WaitingRoomScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<WaitingRoomScreen> createState() => _WaitingRoomScreenState();
+}
+
+class _WaitingRoomScreenState extends ConsumerState<WaitingRoomScreen> {
+  bool _showDefaultsInfo = false;
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(waitingRoomProvider);
 
     return Scaffold(
@@ -30,7 +37,7 @@ class WaitingRoomScreen extends ConsumerWidget {
             IconButton(
               icon: const Icon(Icons.delete_sweep_outlined),
               tooltip: 'Clear all',
-              onPressed: () => _confirmClearAll(context, ref),
+              onPressed: () => _confirmClearAll(context),
             ),
         ],
       ),
@@ -40,6 +47,12 @@ class WaitingRoomScreen extends ConsumerWidget {
           const Padding(
             padding: EdgeInsets.all(16),
             child: FileDropZone(),
+          ),
+
+          // Default values info dropdown
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildDefaultsInfoDropdown(),
           ),
 
           // Error message
@@ -170,7 +183,7 @@ class WaitingRoomScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmClearAll(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmClearAll(BuildContext context) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -193,6 +206,158 @@ class WaitingRoomScreen extends ConsumerWidget {
     if (confirmed == true) {
       ref.read(waitingRoomProvider.notifier).clearAll();
     }
+  }
+
+  Widget _buildDefaultsInfoDropdown() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.amber[50],
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.amber[200]!),
+      ),
+      child: Column(
+        children: [
+          // Header (always visible)
+          InkWell(
+            onTap: () => setState(() => _showDefaultsInfo = !_showDefaultsInfo),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: Colors.amber[800]),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Default Values Information',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.amber[900],
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    _showDefaultsInfo
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: Colors.amber[800],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Expandable content
+          if (_showDefaultsInfo)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Divider(color: Colors.amber[200], height: 1),
+                  const SizedBox(height: 12),
+                  Text(
+                    'The following default values will be applied if not provided:',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.amber[900],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildDefaultItem(
+                    'Duration',
+                    '60 minutes',
+                    'Used for conflict detection and timeline visualization',
+                  ),
+                  _buildDefaultItem(
+                    'Start Time',
+                    'Required',
+                    'Cases without start time are excluded from conflict detection',
+                  ),
+                  _buildDefaultItem(
+                    'Patient Gender',
+                    'Not specified',
+                    'Displayed as empty if not provided',
+                  ),
+                  _buildDefaultItem(
+                    'Patient Age',
+                    'Not specified',
+                    'Displayed as empty if not provided',
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.lightbulb_outline,
+                          size: 14, color: Colors.amber[700]),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          'Tip: Edit cases to set accurate durations for better conflict detection.',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.amber[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDefaultItem(String field, String defaultValue, String note) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              field,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.amber[900],
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.amber[100],
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              defaultValue,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: Colors.amber[900],
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              note,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.amber[700],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
